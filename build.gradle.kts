@@ -51,10 +51,10 @@ subprojects {
 
     publishing {
         publications {
-            create<MavenPublication>("punishguard") {
+            create<MavenPublication>("punishbridge") {
                 from(components["java"])
                 groupId = "rs.jamie"
-                artifactId = "punishguard-${project.name}"
+                artifactId = "punishbridge-${project.name}"
                 version = "0.0.1"
             }
         }
