@@ -1,0 +1,41 @@
+[versions]
+kotlin = "2.4.0"
+coroutines = "1.11.0"
+paper = "1.21.11-R0.1-SNAPSHOT"
+litebans = "0.6.1"
+advancedban = "v2.3.0"
+libertybans = "1.1.3"
+essentialsx = "2.22.0"
+junit = "6.0.2"
+mockito = "5.23.0"
+dokka = "2.2.0"
+detekt = "1.23.8"
+ktlint = "14.2.0"
+binaryCompatibility = "0.18.1"
+cyclonedx = "3.2.4"
+shadow = "9.4.2"
+runPaper = "3.0.2"
+
+[libraries]
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "coroutines" }
+paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+litebans-api = { module = "com.gitlab.ruany:LiteBansAPI", version.ref = "litebans" }
+advancedban-core = { module = "com.github.DevLeoko.AdvancedBan:AdvancedBan-Core", version.ref = "advancedban" }
+advancedban-bukkit = { module = "com.github.DevLeoko.AdvancedBan:AdvancedBan-Bukkit", version.ref = "advancedban" }
+libertybans-api = { module = "space.arim.libertybans:bans-api", version.ref = "libertybans" }
+essentialsx = { module = "net.essentialsx:EssentialsX", version.ref = "essentialsx" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+binary-compatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binaryCompatibility" }
+cyclonedx = { id = "org.cyclonedx.bom", version.ref = "cyclonedx" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "runPaper" }

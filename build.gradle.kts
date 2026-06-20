@@ -1,69 +1,134 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("com.github.johnrengelman.shadow") version "8.1.1" apply true
-    `java-library`
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.ktlint) apply false
+    alias(libs.plugins.binary.compatibility) apply false
+    alias(libs.plugins.cyclonedx) apply false
+    alias(libs.plugins.shadow) apply false
     `maven-publish`
 }
 
+group = "io.github.daisycatts"
+version = providers.gradleProperty("releaseVersion").getOrElse("2.0.0-SNAPSHOT")
 
-subprojects {
-    apply {
-        plugin("java-library")
-        plugin("maven-publish")
-        plugin("com.github.johnrengelman.shadow")
+val junitBomDependency = libs.junit.bom
+val junitJupiterDependency = libs.junit.jupiter
+val junitLauncherDependency = libs.junit.launcher
+
+allprojects {
+    group = rootProject.group
+    version = rootProject.version
+
+    dependencyLocking {
+        lockAllConfigurations()
     }
 
-    version = "1.1.0"
-    java.sourceCompatibility = JavaVersion.VERSION_16
-    java.targetCompatibility = JavaVersion.VERSION_16
+    tasks.withType<AbstractArchiveTask>().configureEach {
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
+    }
+}
 
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven {
-            url = uri("https://repo.papermc.io/repository/maven-public/")
+subprojects {
+    if (name == "punishbridge-bom") return@subprojects
+    if (path == ":samples" || path.startsWith(":samples:")) return@subprojects
+
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.dokka")
+    apply(plugin = "io.gitlab.arturbosch.detekt")
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = "maven-publish")
+    apply(plugin = "signing")
+
+    extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+        buildUponDefaultConfig = true
+        config.setFrom(rootProject.files("config/detekt/detekt.yml"))
+    }
+
+    extensions.configure<JavaPluginExtension> {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension> {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+            allWarningsAsErrors.set(true)
+            freeCompilerArgs.add("-Xjsr305=strict")
+            explicitApi()
         }
-        maven {
-            url = uri("https://jitpack.io")
+    }
+
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+        testLogging {
+            events("failed", "skipped")
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
-        maven {
-            url = uri("https://repo.codemc.io/repository/maven-public/")
-        }
+    }
+
+    tasks.named<Jar>("javadocJar") {
+        dependsOn("dokkaGeneratePublicationHtml")
+        from(layout.buildDirectory.dir("dokka/html"))
     }
 
     dependencies {
-        compileOnly("io.papermc.paper:paper-api:1.17-R0.1-SNAPSHOT")
-        compileOnly("com.gitlab.ruany:LiteBansAPI:0.5.0")
-        compileOnly("com.github.DevLeoko:AdvancedBan:v2.3.0")
+        "testImplementation"(platform(junitBomDependency))
+        "testImplementation"(junitJupiterDependency)
+        "testRuntimeOnly"(junitLauncherDependency)
     }
 
-    tasks {
-        val shadowJar = named<ShadowJar>("shadowJar") {
-            configurations = listOf(project.configurations.getByName("shadow"))
-            archiveFileName.set("PunishBridge.jar")
-        }
-
-        build {
-            dependsOn(shadowJar)
-        }
-    }
-
-    publishing {
+    extensions.configure<PublishingExtension> {
         publications {
-            create<MavenPublication>("punishbridge") {
+            create<MavenPublication>("maven") {
                 from(components["java"])
-                groupId = "rs.jamie"
-                artifactId = "punishbridge-${project.name}"
-                version = "0.0.1"
+                pom {
+                    name.set(project.name)
+                    description.set("A typed Kotlin punishment-system bridge for Paper servers")
+                    url.set("https://github.com/DaisyCatTs/DaisyPunish")
+                    scm {
+                        connection.set("scm:git:https://github.com/DaisyCatTs/DaisyPunish.git")
+                        developerConnection.set("scm:git:ssh://git@github.com/DaisyCatTs/DaisyPunish.git")
+                        url.set("https://github.com/DaisyCatTs/DaisyPunish")
+                    }
+                    developers {
+                        developer {
+                            id.set("DaisyCatTs")
+                            name.set("DaisyCatTs")
+                        }
+                    }
+                }
             }
         }
         repositories {
-            mavenLocal()
+            maven {
+                name = "Central"
+                url = uri(
+                    if (version.toString().endsWith("SNAPSHOT")) {
+                        "https://central.sonatype.com/repository/maven-snapshots/"
+                    } else {
+                        "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
+                    },
+                )
+                credentials {
+                    username = providers.environmentVariable("CENTRAL_USERNAME").orNull
+                    password = providers.environmentVariable("CENTRAL_TOKEN").orNull
+                }
+            }
         }
     }
 
-    tasks.withType<JavaCompile> {
-        options.encoding = "UTF-8"
+    extensions.configure<SigningExtension> {
+        val key = providers.environmentVariable("MAVEN_SIGNING_KEY")
+        val password = providers.environmentVariable("MAVEN_SIGNING_PASSWORD")
+        if (key.isPresent) {
+            useInMemoryPgpKeys(key.get(), password.orNull)
+            sign(extensions.getByType<PublishingExtension>().publications)
+        }
     }
 }
