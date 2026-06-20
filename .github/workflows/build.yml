@@ -7,9 +7,12 @@ on:
 permissions:
   contents: read
 
+env:
+  DEVELOCITY_INJECTION_ENABLED: 'false'
+
 jobs:
   verify:
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -22,6 +25,8 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v5
+        with:
+          develocity-injection-enabled: 'false'
       - name: Verify (Unix)
         if: runner.os != 'Windows'
         run: ./gradlew build apiCheck --no-daemon

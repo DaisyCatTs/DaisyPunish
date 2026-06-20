@@ -7,6 +7,9 @@ on:
 permissions:
   contents: write
 
+env:
+  DEVELOCITY_INJECTION_ENABLED: 'false'
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -23,6 +26,8 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v5
+        with:
+          develocity-injection-enabled: 'false'
       - name: Build and verify
         run: ./gradlew clean build apiCheck -PreleaseVersion="${GITHUB_REF_NAME#v}" --no-daemon
       - name: Publish to Maven Central
