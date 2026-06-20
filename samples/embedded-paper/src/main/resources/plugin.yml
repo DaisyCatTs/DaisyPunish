@@ -1,0 +1,5 @@
+name: PunishBridgeEmbeddedSample
+version: '2.0.0'
+main: io.github.daisycatts.sample.EmbeddedSamplePlugin
+api-version: '1.21'
+softdepend: [LiteBans, AdvancedBan, LibertyBans, Essentials]

@@ -1,0 +1,667 @@
+public abstract interface class io/github/daisycatts/punishbridge/BridgeEvent {
+	public abstract fun getCorrelationId ()Ljava/util/UUID;
+	public abstract fun getFidelity ()Lio/github/daisycatts/punishbridge/EventFidelity;
+	public abstract fun getObservedAt ()Ljava/time/Instant;
+	public abstract fun getOrigin ()Lio/github/daisycatts/punishbridge/EventOrigin;
+	public abstract fun getProviderId ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/BridgeEvent$OperationAccepted : io/github/daisycatts/punishbridge/BridgeEvent {
+	public fun <init> (Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Lio/github/daisycatts/punishbridge/PunishmentRequest;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Lio/github/daisycatts/punishbridge/PunishmentRequest;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/time/Instant;
+	public final fun component3 ()Lio/github/daisycatts/punishbridge/EventOrigin;
+	public final fun component4 ()Ljava/util/UUID;
+	public final fun component5 ()Lio/github/daisycatts/punishbridge/EventFidelity;
+	public final fun component6 ()Lio/github/daisycatts/punishbridge/PunishmentRequest;
+	public final fun copy (Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Lio/github/daisycatts/punishbridge/PunishmentRequest;)Lio/github/daisycatts/punishbridge/BridgeEvent$OperationAccepted;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/BridgeEvent$OperationAccepted;Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Lio/github/daisycatts/punishbridge/PunishmentRequest;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/BridgeEvent$OperationAccepted;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getCorrelationId ()Ljava/util/UUID;
+	public fun getFidelity ()Lio/github/daisycatts/punishbridge/EventFidelity;
+	public fun getObservedAt ()Ljava/time/Instant;
+	public fun getOrigin ()Lio/github/daisycatts/punishbridge/EventOrigin;
+	public fun getProviderId ()Ljava/lang/String;
+	public final fun getRequest ()Lio/github/daisycatts/punishbridge/PunishmentRequest;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/BridgeEvent$ProviderUnavailable : io/github/daisycatts/punishbridge/BridgeEvent {
+	public fun <init> (Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/time/Instant;
+	public final fun component3 ()Lio/github/daisycatts/punishbridge/EventOrigin;
+	public final fun component4 ()Ljava/util/UUID;
+	public final fun component5 ()Lio/github/daisycatts/punishbridge/EventFidelity;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Ljava/lang/String;)Lio/github/daisycatts/punishbridge/BridgeEvent$ProviderUnavailable;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/BridgeEvent$ProviderUnavailable;Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Ljava/lang/String;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/BridgeEvent$ProviderUnavailable;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getCorrelationId ()Ljava/util/UUID;
+	public fun getFidelity ()Lio/github/daisycatts/punishbridge/EventFidelity;
+	public fun getObservedAt ()Ljava/time/Instant;
+	public fun getOrigin ()Lio/github/daisycatts/punishbridge/EventOrigin;
+	public fun getProviderId ()Ljava/lang/String;
+	public final fun getReason ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/BridgeEvent$PunishmentApplied : io/github/daisycatts/punishbridge/BridgeEvent {
+	public fun <init> (Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Lio/github/daisycatts/punishbridge/PunishmentRecord;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/time/Instant;
+	public final fun component3 ()Lio/github/daisycatts/punishbridge/EventOrigin;
+	public final fun component4 ()Ljava/util/UUID;
+	public final fun component5 ()Lio/github/daisycatts/punishbridge/EventFidelity;
+	public final fun component6 ()Lio/github/daisycatts/punishbridge/PunishmentRecord;
+	public final fun copy (Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Lio/github/daisycatts/punishbridge/PunishmentRecord;)Lio/github/daisycatts/punishbridge/BridgeEvent$PunishmentApplied;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/BridgeEvent$PunishmentApplied;Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Lio/github/daisycatts/punishbridge/PunishmentRecord;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/BridgeEvent$PunishmentApplied;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getCorrelationId ()Ljava/util/UUID;
+	public fun getFidelity ()Lio/github/daisycatts/punishbridge/EventFidelity;
+	public fun getObservedAt ()Ljava/time/Instant;
+	public fun getOrigin ()Lio/github/daisycatts/punishbridge/EventOrigin;
+	public fun getProviderId ()Ljava/lang/String;
+	public final fun getPunishment ()Lio/github/daisycatts/punishbridge/PunishmentRecord;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/BridgeEvent$PunishmentRevoked : io/github/daisycatts/punishbridge/BridgeEvent {
+	public fun <init> (Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Lio/github/daisycatts/punishbridge/PunishmentRecord;Lio/github/daisycatts/punishbridge/RevocationSelector;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/time/Instant;
+	public final fun component3 ()Lio/github/daisycatts/punishbridge/EventOrigin;
+	public final fun component4 ()Ljava/util/UUID;
+	public final fun component5 ()Lio/github/daisycatts/punishbridge/EventFidelity;
+	public final fun component6 ()Lio/github/daisycatts/punishbridge/PunishmentRecord;
+	public final fun component7 ()Lio/github/daisycatts/punishbridge/RevocationSelector;
+	public final fun copy (Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Lio/github/daisycatts/punishbridge/PunishmentRecord;Lio/github/daisycatts/punishbridge/RevocationSelector;)Lio/github/daisycatts/punishbridge/BridgeEvent$PunishmentRevoked;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/BridgeEvent$PunishmentRevoked;Ljava/lang/String;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/EventOrigin;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/EventFidelity;Lio/github/daisycatts/punishbridge/PunishmentRecord;Lio/github/daisycatts/punishbridge/RevocationSelector;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/BridgeEvent$PunishmentRevoked;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getCorrelationId ()Ljava/util/UUID;
+	public fun getFidelity ()Lio/github/daisycatts/punishbridge/EventFidelity;
+	public fun getObservedAt ()Ljava/time/Instant;
+	public fun getOrigin ()Lio/github/daisycatts/punishbridge/EventOrigin;
+	public fun getProviderId ()Ljava/lang/String;
+	public final fun getPunishment ()Lio/github/daisycatts/punishbridge/PunishmentRecord;
+	public final fun getSelector ()Lio/github/daisycatts/punishbridge/RevocationSelector;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/github/daisycatts/punishbridge/BridgeOutcome {
+}
+
+public final class io/github/daisycatts/punishbridge/BridgeOutcome$Accepted : io/github/daisycatts/punishbridge/BridgeOutcome {
+	public fun <init> (Lio/github/daisycatts/punishbridge/OperationReceipt;)V
+	public final fun component1 ()Lio/github/daisycatts/punishbridge/OperationReceipt;
+	public final fun copy (Lio/github/daisycatts/punishbridge/OperationReceipt;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Accepted;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/BridgeOutcome$Accepted;Lio/github/daisycatts/punishbridge/OperationReceipt;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Accepted;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getReceipt ()Lio/github/daisycatts/punishbridge/OperationReceipt;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/BridgeOutcome$Failed : io/github/daisycatts/punishbridge/BridgeOutcome {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Throwable;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Failed;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/BridgeOutcome$Failed;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Failed;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCause ()Ljava/lang/Throwable;
+	public final fun getMessage ()Ljava/lang/String;
+	public final fun getProviderId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/BridgeOutcome$Rejected : io/github/daisycatts/punishbridge/BridgeOutcome {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Rejected;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/BridgeOutcome$Rejected;Ljava/lang/String;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Rejected;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getReason ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/BridgeOutcome$Success : io/github/daisycatts/punishbridge/BridgeOutcome {
+	public fun <init> (Ljava/lang/Object;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun copy (Ljava/lang/Object;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Success;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/BridgeOutcome$Success;Ljava/lang/Object;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Success;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/BridgeOutcome$Unavailable : io/github/daisycatts/punishbridge/BridgeOutcome {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Unavailable;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/BridgeOutcome$Unavailable;Ljava/lang/String;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Unavailable;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getReason ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/BridgeOutcome$Unsupported : io/github/daisycatts/punishbridge/BridgeOutcome {
+	public fun <init> (Lio/github/daisycatts/punishbridge/CapabilityRequest;)V
+	public final fun component1 ()Lio/github/daisycatts/punishbridge/CapabilityRequest;
+	public final fun copy (Lio/github/daisycatts/punishbridge/CapabilityRequest;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Unsupported;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/BridgeOutcome$Unsupported;Lio/github/daisycatts/punishbridge/CapabilityRequest;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/BridgeOutcome$Unsupported;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCapability ()Lio/github/daisycatts/punishbridge/CapabilityRequest;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/BridgeOutcomeKt {
+	public static final fun map (Lio/github/daisycatts/punishbridge/BridgeOutcome;Lkotlin/jvm/functions/Function1;)Lio/github/daisycatts/punishbridge/BridgeOutcome;
+}
+
+public final class io/github/daisycatts/punishbridge/CapabilitiesKt {
+	public static final fun kind (Lio/github/daisycatts/punishbridge/PunishmentTarget;)Lio/github/daisycatts/punishbridge/TargetKind;
+	public static final fun mode (Lio/github/daisycatts/punishbridge/PunishmentDuration;)Lio/github/daisycatts/punishbridge/DurationMode;
+	public static final fun mode (Lio/github/daisycatts/punishbridge/PunishmentScope;)Lio/github/daisycatts/punishbridge/ScopeMode;
+}
+
+public final class io/github/daisycatts/punishbridge/Capability {
+	public fun <init> (Lio/github/daisycatts/punishbridge/PunishmentOperation;Lio/github/daisycatts/punishbridge/PunishmentKind;Ljava/util/Set;Ljava/util/Set;Ljava/util/Set;Lio/github/daisycatts/punishbridge/EventFidelity;)V
+	public final fun component1 ()Lio/github/daisycatts/punishbridge/PunishmentOperation;
+	public final fun component2 ()Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public final fun component3 ()Ljava/util/Set;
+	public final fun component4 ()Ljava/util/Set;
+	public final fun component5 ()Ljava/util/Set;
+	public final fun component6 ()Lio/github/daisycatts/punishbridge/EventFidelity;
+	public final fun copy (Lio/github/daisycatts/punishbridge/PunishmentOperation;Lio/github/daisycatts/punishbridge/PunishmentKind;Ljava/util/Set;Ljava/util/Set;Ljava/util/Set;Lio/github/daisycatts/punishbridge/EventFidelity;)Lio/github/daisycatts/punishbridge/Capability;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/Capability;Lio/github/daisycatts/punishbridge/PunishmentOperation;Lio/github/daisycatts/punishbridge/PunishmentKind;Ljava/util/Set;Ljava/util/Set;Ljava/util/Set;Lio/github/daisycatts/punishbridge/EventFidelity;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/Capability;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDurationModes ()Ljava/util/Set;
+	public final fun getEventFidelity ()Lio/github/daisycatts/punishbridge/EventFidelity;
+	public final fun getKind ()Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public final fun getOperation ()Lio/github/daisycatts/punishbridge/PunishmentOperation;
+	public final fun getScopeModes ()Ljava/util/Set;
+	public final fun getTargetKinds ()Ljava/util/Set;
+	public fun hashCode ()I
+	public final fun supports (Lio/github/daisycatts/punishbridge/CapabilityRequest;)Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/CapabilityRequest {
+	public fun <init> (Lio/github/daisycatts/punishbridge/PunishmentOperation;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/TargetKind;Lio/github/daisycatts/punishbridge/DurationMode;Lio/github/daisycatts/punishbridge/ScopeMode;)V
+	public synthetic fun <init> (Lio/github/daisycatts/punishbridge/PunishmentOperation;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/TargetKind;Lio/github/daisycatts/punishbridge/DurationMode;Lio/github/daisycatts/punishbridge/ScopeMode;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/daisycatts/punishbridge/PunishmentOperation;
+	public final fun component2 ()Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public final fun component3 ()Lio/github/daisycatts/punishbridge/TargetKind;
+	public final fun component4 ()Lio/github/daisycatts/punishbridge/DurationMode;
+	public final fun component5 ()Lio/github/daisycatts/punishbridge/ScopeMode;
+	public final fun copy (Lio/github/daisycatts/punishbridge/PunishmentOperation;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/TargetKind;Lio/github/daisycatts/punishbridge/DurationMode;Lio/github/daisycatts/punishbridge/ScopeMode;)Lio/github/daisycatts/punishbridge/CapabilityRequest;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/CapabilityRequest;Lio/github/daisycatts/punishbridge/PunishmentOperation;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/TargetKind;Lio/github/daisycatts/punishbridge/DurationMode;Lio/github/daisycatts/punishbridge/ScopeMode;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/CapabilityRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDurationMode ()Lio/github/daisycatts/punishbridge/DurationMode;
+	public final fun getKind ()Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public final fun getOperation ()Lio/github/daisycatts/punishbridge/PunishmentOperation;
+	public final fun getScopeMode ()Lio/github/daisycatts/punishbridge/ScopeMode;
+	public final fun getTargetKind ()Lio/github/daisycatts/punishbridge/TargetKind;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/DataFidelity : java/lang/Enum {
+	public static final field COMPLETE Lio/github/daisycatts/punishbridge/DataFidelity;
+	public static final field PARTIAL Lio/github/daisycatts/punishbridge/DataFidelity;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/DataFidelity;
+	public static fun values ()[Lio/github/daisycatts/punishbridge/DataFidelity;
+}
+
+public final class io/github/daisycatts/punishbridge/DurationMode : java/lang/Enum {
+	public static final field PERMANENT Lio/github/daisycatts/punishbridge/DurationMode;
+	public static final field TEMPORARY Lio/github/daisycatts/punishbridge/DurationMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/DurationMode;
+	public static fun values ()[Lio/github/daisycatts/punishbridge/DurationMode;
+}
+
+public final class io/github/daisycatts/punishbridge/EventFidelity : java/lang/Enum {
+	public static final field AUTHORITATIVE_LOCAL Lio/github/daisycatts/punishbridge/EventFidelity;
+	public static final field BRIDGE_ONLY Lio/github/daisycatts/punishbridge/EventFidelity;
+	public static final field PARTIAL_LOCAL Lio/github/daisycatts/punishbridge/EventFidelity;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/EventFidelity;
+	public static fun values ()[Lio/github/daisycatts/punishbridge/EventFidelity;
+}
+
+public final class io/github/daisycatts/punishbridge/EventOrigin : java/lang/Enum {
+	public static final field BRIDGE Lio/github/daisycatts/punishbridge/EventOrigin;
+	public static final field EXTERNAL_PROVIDER Lio/github/daisycatts/punishbridge/EventOrigin;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/EventOrigin;
+	public static fun values ()[Lio/github/daisycatts/punishbridge/EventOrigin;
+}
+
+public final class io/github/daisycatts/punishbridge/JavaPunishmentBridge : java/lang/AutoCloseable {
+	public fun <init> (Lio/github/daisycatts/punishbridge/PunishmentBridge;)V
+	public fun close ()V
+	public final fun findActive (Lio/github/daisycatts/punishbridge/PunishmentQuery;)Ljava/util/concurrent/CompletionStage;
+	public final fun getDelegate ()Lio/github/daisycatts/punishbridge/PunishmentBridge;
+	public final fun isBanned (Lio/github/daisycatts/punishbridge/PunishmentTarget;)Ljava/util/concurrent/CompletionStage;
+	public final fun isMuted (Lio/github/daisycatts/punishbridge/PunishmentTarget;)Ljava/util/concurrent/CompletionStage;
+	public final fun issue (Lio/github/daisycatts/punishbridge/PunishmentRequest;)Ljava/util/concurrent/CompletionStage;
+	public final fun revoke (Lio/github/daisycatts/punishbridge/RevocationRequest;)Ljava/util/concurrent/CompletionStage;
+	public final fun subscribe (Ljava/util/function/Consumer;)Ljava/lang/AutoCloseable;
+}
+
+public final class io/github/daisycatts/punishbridge/OperationReceipt {
+	public fun <init> (Ljava/lang/String;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/ReceiptStatus;Lio/github/daisycatts/punishbridge/PunishmentReference;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/ReceiptStatus;Lio/github/daisycatts/punishbridge/PunishmentReference;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/UUID;
+	public final fun component3 ()Lio/github/daisycatts/punishbridge/ReceiptStatus;
+	public final fun component4 ()Lio/github/daisycatts/punishbridge/PunishmentReference;
+	public final fun copy (Ljava/lang/String;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/ReceiptStatus;Lio/github/daisycatts/punishbridge/PunishmentReference;)Lio/github/daisycatts/punishbridge/OperationReceipt;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/OperationReceipt;Ljava/lang/String;Ljava/util/UUID;Lio/github/daisycatts/punishbridge/ReceiptStatus;Lio/github/daisycatts/punishbridge/PunishmentReference;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/OperationReceipt;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCorrelationId ()Ljava/util/UUID;
+	public final fun getProviderId ()Ljava/lang/String;
+	public final fun getReference ()Lio/github/daisycatts/punishbridge/PunishmentReference;
+	public final fun getStatus ()Lio/github/daisycatts/punishbridge/ReceiptStatus;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/ProviderCapabilities {
+	public static final field Companion Lio/github/daisycatts/punishbridge/ProviderCapabilities$Companion;
+	public static final field NONE Lio/github/daisycatts/punishbridge/ProviderCapabilities;
+	public fun <init> (Ljava/util/Set;)V
+	public final fun component1 ()Ljava/util/Set;
+	public final fun copy (Ljava/util/Set;)Lio/github/daisycatts/punishbridge/ProviderCapabilities;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/ProviderCapabilities;Ljava/util/Set;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/ProviderCapabilities;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEntries ()Ljava/util/Set;
+	public fun hashCode ()I
+	public final fun supports (Lio/github/daisycatts/punishbridge/CapabilityRequest;)Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/ProviderCapabilities$Companion {
+}
+
+public final class io/github/daisycatts/punishbridge/ProviderDescriptor {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/daisycatts/punishbridge/ProviderTier;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lio/github/daisycatts/punishbridge/ProviderTier;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/daisycatts/punishbridge/ProviderTier;)Lio/github/daisycatts/punishbridge/ProviderDescriptor;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/ProviderDescriptor;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/daisycatts/punishbridge/ProviderTier;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/ProviderDescriptor;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBridgeVersion ()Ljava/lang/String;
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getProviderVersion ()Ljava/lang/String;
+	public final fun getTier ()Lio/github/daisycatts/punishbridge/ProviderTier;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/ProviderTier : java/lang/Enum {
+	public static final field DEDICATED Lio/github/daisycatts/punishbridge/ProviderTier;
+	public static final field FALLBACK Lio/github/daisycatts/punishbridge/ProviderTier;
+	public static final field SYSTEM Lio/github/daisycatts/punishbridge/ProviderTier;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/ProviderTier;
+	public static fun values ()[Lio/github/daisycatts/punishbridge/ProviderTier;
+}
+
+public abstract interface class io/github/daisycatts/punishbridge/PunishmentActor {
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentActor$Console : io/github/daisycatts/punishbridge/PunishmentActor {
+	public static final field INSTANCE Lio/github/daisycatts/punishbridge/PunishmentActor$Console;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentActor$Player : io/github/daisycatts/punishbridge/PunishmentActor {
+	public fun <init> (Ljava/util/UUID;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/util/UUID;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/util/UUID;Ljava/lang/String;)Lio/github/daisycatts/punishbridge/PunishmentActor$Player;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/PunishmentActor$Player;Ljava/util/UUID;Ljava/lang/String;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/PunishmentActor$Player;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getUsername ()Ljava/lang/String;
+	public final fun getUuid ()Ljava/util/UUID;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentActor$System : io/github/daisycatts/punishbridge/PunishmentActor {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/PunishmentActor$System;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/PunishmentActor$System;Ljava/lang/String;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/PunishmentActor$System;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getComponentName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/github/daisycatts/punishbridge/PunishmentBridge : java/lang/AutoCloseable {
+	public abstract fun close ()V
+	public abstract fun findActive (Lio/github/daisycatts/punishbridge/PunishmentQuery;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getCapabilities ()Lio/github/daisycatts/punishbridge/ProviderCapabilities;
+	public abstract fun getEvents ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getProvider ()Lio/github/daisycatts/punishbridge/ProviderDescriptor;
+	public fun isBanned (Lio/github/daisycatts/punishbridge/PunishmentTarget;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun isMuted (Lio/github/daisycatts/punishbridge/PunishmentTarget;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun issue (Lio/github/daisycatts/punishbridge/PunishmentRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun revoke (Lio/github/daisycatts/punishbridge/RevocationRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentBridge$DefaultImpls {
+	public static fun isBanned (Lio/github/daisycatts/punishbridge/PunishmentBridge;Lio/github/daisycatts/punishbridge/PunishmentTarget;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static fun isMuted (Lio/github/daisycatts/punishbridge/PunishmentBridge;Lio/github/daisycatts/punishbridge/PunishmentTarget;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class io/github/daisycatts/punishbridge/PunishmentDuration {
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentDuration$Permanent : io/github/daisycatts/punishbridge/PunishmentDuration {
+	public static final field INSTANCE Lio/github/daisycatts/punishbridge/PunishmentDuration$Permanent;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentDuration$Temporary : io/github/daisycatts/punishbridge/PunishmentDuration {
+	public fun <init> (Ljava/time/Duration;)V
+	public final fun component1 ()Ljava/time/Duration;
+	public final fun copy (Ljava/time/Duration;)Lio/github/daisycatts/punishbridge/PunishmentDuration$Temporary;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/PunishmentDuration$Temporary;Ljava/time/Duration;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/PunishmentDuration$Temporary;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDuration ()Ljava/time/Duration;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentKind : java/lang/Enum {
+	public static final field BAN Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public static final field KICK Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public static final field MUTE Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public static final field WARNING Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public static fun values ()[Lio/github/daisycatts/punishbridge/PunishmentKind;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentOperation : java/lang/Enum {
+	public static final field ISSUE Lio/github/daisycatts/punishbridge/PunishmentOperation;
+	public static final field OBSERVE_EXTERNAL Lio/github/daisycatts/punishbridge/PunishmentOperation;
+	public static final field QUERY Lio/github/daisycatts/punishbridge/PunishmentOperation;
+	public static final field REVOKE Lio/github/daisycatts/punishbridge/PunishmentOperation;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/PunishmentOperation;
+	public static fun values ()[Lio/github/daisycatts/punishbridge/PunishmentOperation;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentQuery {
+	public fun <init> (Lio/github/daisycatts/punishbridge/PunishmentTarget;Ljava/util/Set;Lio/github/daisycatts/punishbridge/PunishmentScope;)V
+	public synthetic fun <init> (Lio/github/daisycatts/punishbridge/PunishmentTarget;Ljava/util/Set;Lio/github/daisycatts/punishbridge/PunishmentScope;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/daisycatts/punishbridge/PunishmentTarget;
+	public final fun component2 ()Ljava/util/Set;
+	public final fun component3 ()Lio/github/daisycatts/punishbridge/PunishmentScope;
+	public final fun copy (Lio/github/daisycatts/punishbridge/PunishmentTarget;Ljava/util/Set;Lio/github/daisycatts/punishbridge/PunishmentScope;)Lio/github/daisycatts/punishbridge/PunishmentQuery;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/PunishmentQuery;Lio/github/daisycatts/punishbridge/PunishmentTarget;Ljava/util/Set;Lio/github/daisycatts/punishbridge/PunishmentScope;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/PunishmentQuery;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKinds ()Ljava/util/Set;
+	public final fun getScope ()Lio/github/daisycatts/punishbridge/PunishmentScope;
+	public final fun getTarget ()Lio/github/daisycatts/punishbridge/PunishmentTarget;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentRecord {
+	public fun <init> (Ljava/lang/String;Lio/github/daisycatts/punishbridge/PunishmentReference;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;Ljava/time/Instant;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/PunishmentScope;Lio/github/daisycatts/punishbridge/DataFidelity;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/daisycatts/punishbridge/PunishmentReference;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;Ljava/time/Instant;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/PunishmentScope;Lio/github/daisycatts/punishbridge/DataFidelity;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component10 ()Lio/github/daisycatts/punishbridge/DataFidelity;
+	public final fun component2 ()Lio/github/daisycatts/punishbridge/PunishmentReference;
+	public final fun component3 ()Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public final fun component4 ()Lio/github/daisycatts/punishbridge/PunishmentTarget;
+	public final fun component5 ()Lio/github/daisycatts/punishbridge/PunishmentActor;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/time/Instant;
+	public final fun component8 ()Ljava/time/Instant;
+	public final fun component9 ()Lio/github/daisycatts/punishbridge/PunishmentScope;
+	public final fun copy (Ljava/lang/String;Lio/github/daisycatts/punishbridge/PunishmentReference;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;Ljava/time/Instant;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/PunishmentScope;Lio/github/daisycatts/punishbridge/DataFidelity;)Lio/github/daisycatts/punishbridge/PunishmentRecord;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/PunishmentRecord;Ljava/lang/String;Lio/github/daisycatts/punishbridge/PunishmentReference;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;Ljava/time/Instant;Ljava/time/Instant;Lio/github/daisycatts/punishbridge/PunishmentScope;Lio/github/daisycatts/punishbridge/DataFidelity;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/PunishmentRecord;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor ()Lio/github/daisycatts/punishbridge/PunishmentActor;
+	public final fun getExpiresAt ()Ljava/time/Instant;
+	public final fun getFidelity ()Lio/github/daisycatts/punishbridge/DataFidelity;
+	public final fun getKind ()Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public final fun getProviderId ()Ljava/lang/String;
+	public final fun getReason ()Ljava/lang/String;
+	public final fun getReference ()Lio/github/daisycatts/punishbridge/PunishmentReference;
+	public final fun getScope ()Lio/github/daisycatts/punishbridge/PunishmentScope;
+	public final fun getStartsAt ()Ljava/time/Instant;
+	public final fun getTarget ()Lio/github/daisycatts/punishbridge/PunishmentTarget;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentReference {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lio/github/daisycatts/punishbridge/PunishmentReference;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/PunishmentReference;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/PunishmentReference;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getExternalId ()Ljava/lang/String;
+	public final fun getProviderId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentRequest {
+	public fun <init> (Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;Lio/github/daisycatts/punishbridge/PunishmentDuration;Lio/github/daisycatts/punishbridge/PunishmentScope;)V
+	public synthetic fun <init> (Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;Lio/github/daisycatts/punishbridge/PunishmentDuration;Lio/github/daisycatts/punishbridge/PunishmentScope;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public final fun component2 ()Lio/github/daisycatts/punishbridge/PunishmentTarget;
+	public final fun component3 ()Lio/github/daisycatts/punishbridge/PunishmentActor;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lio/github/daisycatts/punishbridge/PunishmentDuration;
+	public final fun component6 ()Lio/github/daisycatts/punishbridge/PunishmentScope;
+	public final fun copy (Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;Lio/github/daisycatts/punishbridge/PunishmentDuration;Lio/github/daisycatts/punishbridge/PunishmentScope;)Lio/github/daisycatts/punishbridge/PunishmentRequest;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/PunishmentRequest;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;Lio/github/daisycatts/punishbridge/PunishmentDuration;Lio/github/daisycatts/punishbridge/PunishmentScope;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/PunishmentRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor ()Lio/github/daisycatts/punishbridge/PunishmentActor;
+	public final fun getDuration ()Lio/github/daisycatts/punishbridge/PunishmentDuration;
+	public final fun getKind ()Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public final fun getReason ()Ljava/lang/String;
+	public final fun getScope ()Lio/github/daisycatts/punishbridge/PunishmentScope;
+	public final fun getTarget ()Lio/github/daisycatts/punishbridge/PunishmentTarget;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/github/daisycatts/punishbridge/PunishmentScope {
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentScope$CurrentServer : io/github/daisycatts/punishbridge/PunishmentScope {
+	public static final field INSTANCE Lio/github/daisycatts/punishbridge/PunishmentScope$CurrentServer;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentScope$Global : io/github/daisycatts/punishbridge/PunishmentScope {
+	public static final field INSTANCE Lio/github/daisycatts/punishbridge/PunishmentScope$Global;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentScope$NamedServer : io/github/daisycatts/punishbridge/PunishmentScope {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/PunishmentScope$NamedServer;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/PunishmentScope$NamedServer;Ljava/lang/String;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/PunishmentScope$NamedServer;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/github/daisycatts/punishbridge/PunishmentTarget {
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentTarget$Address : io/github/daisycatts/punishbridge/PunishmentTarget {
+	public fun <init> (Ljava/net/InetAddress;)V
+	public final fun component1 ()Ljava/net/InetAddress;
+	public final fun copy (Ljava/net/InetAddress;)Lio/github/daisycatts/punishbridge/PunishmentTarget$Address;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/PunishmentTarget$Address;Ljava/net/InetAddress;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/PunishmentTarget$Address;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAddress ()Ljava/net/InetAddress;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentTarget$Player : io/github/daisycatts/punishbridge/PunishmentTarget {
+	public fun <init> (Ljava/util/UUID;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/util/UUID;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/util/UUID;Ljava/lang/String;)Lio/github/daisycatts/punishbridge/PunishmentTarget$Player;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/PunishmentTarget$Player;Ljava/util/UUID;Ljava/lang/String;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/PunishmentTarget$Player;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getUsername ()Ljava/lang/String;
+	public final fun getUuid ()Ljava/util/UUID;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/PunishmentTarget$PlayerAndAddress : io/github/daisycatts/punishbridge/PunishmentTarget {
+	public fun <init> (Ljava/util/UUID;Ljava/lang/String;Ljava/net/InetAddress;)V
+	public final fun component1 ()Ljava/util/UUID;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/net/InetAddress;
+	public final fun copy (Ljava/util/UUID;Ljava/lang/String;Ljava/net/InetAddress;)Lio/github/daisycatts/punishbridge/PunishmentTarget$PlayerAndAddress;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/PunishmentTarget$PlayerAndAddress;Ljava/util/UUID;Ljava/lang/String;Ljava/net/InetAddress;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/PunishmentTarget$PlayerAndAddress;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAddress ()Ljava/net/InetAddress;
+	public final fun getUsername ()Ljava/lang/String;
+	public final fun getUuid ()Ljava/util/UUID;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/ReceiptStatus : java/lang/Enum {
+	public static final field ACCEPTED Lio/github/daisycatts/punishbridge/ReceiptStatus;
+	public static final field APPLIED Lio/github/daisycatts/punishbridge/ReceiptStatus;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/ReceiptStatus;
+	public static fun values ()[Lio/github/daisycatts/punishbridge/ReceiptStatus;
+}
+
+public final class io/github/daisycatts/punishbridge/RequestValidator {
+	public static final field INSTANCE Lio/github/daisycatts/punishbridge/RequestValidator;
+	public static final fun validate (Lio/github/daisycatts/punishbridge/PunishmentQuery;)Ljava/lang/String;
+	public static final fun validate (Lio/github/daisycatts/punishbridge/PunishmentRequest;)Ljava/lang/String;
+	public static final fun validate (Lio/github/daisycatts/punishbridge/RevocationRequest;)Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/RevocationReceipt {
+	public fun <init> (Ljava/lang/String;Ljava/util/UUID;Ljava/lang/Integer;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/UUID;
+	public final fun component3 ()Ljava/lang/Integer;
+	public final fun copy (Ljava/lang/String;Ljava/util/UUID;Ljava/lang/Integer;)Lio/github/daisycatts/punishbridge/RevocationReceipt;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/RevocationReceipt;Ljava/lang/String;Ljava/util/UUID;Ljava/lang/Integer;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/RevocationReceipt;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCorrelationId ()Ljava/util/UUID;
+	public final fun getProviderId ()Ljava/lang/String;
+	public final fun getRevokedCount ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/RevocationRequest {
+	public fun <init> (Lio/github/daisycatts/punishbridge/RevocationSelector;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;)V
+	public synthetic fun <init> (Lio/github/daisycatts/punishbridge/RevocationSelector;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/daisycatts/punishbridge/RevocationSelector;
+	public final fun component2 ()Lio/github/daisycatts/punishbridge/PunishmentActor;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Lio/github/daisycatts/punishbridge/RevocationSelector;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;)Lio/github/daisycatts/punishbridge/RevocationRequest;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/RevocationRequest;Lio/github/daisycatts/punishbridge/RevocationSelector;Lio/github/daisycatts/punishbridge/PunishmentActor;Ljava/lang/String;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/RevocationRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor ()Lio/github/daisycatts/punishbridge/PunishmentActor;
+	public final fun getReason ()Ljava/lang/String;
+	public final fun getSelector ()Lio/github/daisycatts/punishbridge/RevocationSelector;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/github/daisycatts/punishbridge/RevocationSelector {
+}
+
+public final class io/github/daisycatts/punishbridge/RevocationSelector$ByReference : io/github/daisycatts/punishbridge/RevocationSelector {
+	public fun <init> (Lio/github/daisycatts/punishbridge/PunishmentReference;)V
+	public final fun component1 ()Lio/github/daisycatts/punishbridge/PunishmentReference;
+	public final fun copy (Lio/github/daisycatts/punishbridge/PunishmentReference;)Lio/github/daisycatts/punishbridge/RevocationSelector$ByReference;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/RevocationSelector$ByReference;Lio/github/daisycatts/punishbridge/PunishmentReference;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/RevocationSelector$ByReference;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getReference ()Lio/github/daisycatts/punishbridge/PunishmentReference;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/RevocationSelector$ByTarget : io/github/daisycatts/punishbridge/RevocationSelector {
+	public fun <init> (Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentScope;)V
+	public synthetic fun <init> (Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentScope;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/daisycatts/punishbridge/PunishmentTarget;
+	public final fun component2 ()Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public final fun component3 ()Lio/github/daisycatts/punishbridge/PunishmentScope;
+	public final fun copy (Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentScope;)Lio/github/daisycatts/punishbridge/RevocationSelector$ByTarget;
+	public static synthetic fun copy$default (Lio/github/daisycatts/punishbridge/RevocationSelector$ByTarget;Lio/github/daisycatts/punishbridge/PunishmentTarget;Lio/github/daisycatts/punishbridge/PunishmentKind;Lio/github/daisycatts/punishbridge/PunishmentScope;ILjava/lang/Object;)Lio/github/daisycatts/punishbridge/RevocationSelector$ByTarget;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKind ()Lio/github/daisycatts/punishbridge/PunishmentKind;
+	public final fun getScope ()Lio/github/daisycatts/punishbridge/PunishmentScope;
+	public final fun getTarget ()Lio/github/daisycatts/punishbridge/PunishmentTarget;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/daisycatts/punishbridge/ScopeMode : java/lang/Enum {
+	public static final field CURRENT_SERVER Lio/github/daisycatts/punishbridge/ScopeMode;
+	public static final field GLOBAL Lio/github/daisycatts/punishbridge/ScopeMode;
+	public static final field NAMED_SERVER Lio/github/daisycatts/punishbridge/ScopeMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/ScopeMode;
+	public static fun values ()[Lio/github/daisycatts/punishbridge/ScopeMode;
+}
+
+public final class io/github/daisycatts/punishbridge/TargetKind : java/lang/Enum {
+	public static final field ADDRESS Lio/github/daisycatts/punishbridge/TargetKind;
+	public static final field PLAYER Lio/github/daisycatts/punishbridge/TargetKind;
+	public static final field PLAYER_AND_ADDRESS Lio/github/daisycatts/punishbridge/TargetKind;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/github/daisycatts/punishbridge/TargetKind;
+	public static fun values ()[Lio/github/daisycatts/punishbridge/TargetKind;
+}
+
