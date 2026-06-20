@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0-rc.1
+## 2.0.0
 
 - Clean Kotlin rewrite with Java 21 and Paper 1.21.11.
 - Typed issue, revoke, query, capability, result, and event APIs.
