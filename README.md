@@ -105,4 +105,4 @@ The bridge must be created in `onEnable` and closed in `onDisable`.
 
 LiteBans does not emit every cross-instance or wildcard-removal event. PunishBridge reports these limitations through provider capabilities and never intercepts commands to manufacture events.
 
-See [migration guidance](docs/MIGRATION.md), [compatibility details](docs/COMPATIBILITY.md), and the [sample embedded plugin](samples/embedded-paper).
+See the [consuming guide](docs/CONSUMING.md) for full integration steps, [migration guidance](docs/MIGRATION.md), [compatibility details](docs/COMPATIBILITY.md), and the [sample embedded plugin](samples/embedded-paper).
