@@ -12,6 +12,7 @@ import io.github.daisycatts.punishbridge.PunishmentOperation
 import io.github.daisycatts.punishbridge.PunishmentQuery
 import io.github.daisycatts.punishbridge.PunishmentRecord
 import io.github.daisycatts.punishbridge.PunishmentRequest
+import io.github.daisycatts.punishbridge.PunishmentTarget
 import io.github.daisycatts.punishbridge.RequestValidator
 import io.github.daisycatts.punishbridge.RevocationReceipt
 import io.github.daisycatts.punishbridge.RevocationRequest
@@ -272,9 +273,9 @@ public class PaperPunishmentBridge private constructor(
     }
 }
 
-private fun io.github.daisycatts.punishbridge.PunishmentTarget.toLockKey(): String =
+private fun PunishmentTarget.toLockKey(): String =
     when (this) {
-        is io.github.daisycatts.punishbridge.PunishmentTarget.Player -> "player:$uuid"
-        is io.github.daisycatts.punishbridge.PunishmentTarget.Address -> "address:${address.hostAddress}"
-        is io.github.daisycatts.punishbridge.PunishmentTarget.PlayerAndAddress -> "composite:$uuid:${address.hostAddress}"
+        is PunishmentTarget.Player -> "player:$uuid"
+        is PunishmentTarget.Address -> "address:${address.hostAddress}"
+        is PunishmentTarget.PlayerAndAddress -> "composite:$uuid:${address.hostAddress}"
     }
