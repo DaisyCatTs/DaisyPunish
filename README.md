@@ -12,6 +12,23 @@ Supported providers are LiteBans, AdvancedBan, LibertyBans, EssentialsX, and Pap
 
 ## Dependency
 
+### JitPack
+
+```kotlin
+repositories {
+    maven("https://jitpack.io")
+}
+
+dependencies {
+    implementation("com.github.DaisyCatTs.DaisyPunish:punishbridge-paper:v2.0.0")
+    implementation("com.github.DaisyCatTs.DaisyPunish:punishbridge-provider-litebans:v2.0.0")
+}
+```
+
+JitPack builds the tagged commit on first request, so no Maven Central account or signing is required. Use the same coordinate version on every module (a release tag such as `v2.0.0`, or a commit hash) so their versions stay aligned. Provider APIs stay `compileOnly`, so the server still supplies LiteBans, AdvancedBan, LibertyBans, or EssentialsX at runtime.
+
+### Maven Central
+
 ```kotlin
 dependencies {
     implementation(platform("io.github.daisycatts:punishbridge-bom:2.0.0"))
