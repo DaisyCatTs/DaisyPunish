@@ -148,8 +148,46 @@ softdepend: [LiteBans, AdvancedBan, LibertyBans, Essentials]
 | Vanilla Paper | full | unsupported | unsupported | issue | bridge-only |
 
 Dedicated providers outrank EssentialsX, which outranks vanilla. Two dedicated providers installed at
-once require an explicit `.provider("<id>")`. PunishBridge reports these limits through capabilities
-and never intercepts commands to manufacture events.
+once require an explicit `.provider(ProviderIds.LITEBANS)`. PunishBridge reports these limits through
+capabilities and never intercepts commands to manufacture events.
+
+## Project structure
+
+| Module | Purpose |
+| --- | --- |
+| `punishbridge-api` | Public, framework-free API: model, capabilities, outcomes, events, validation, Java facade |
+| `punishbridge-paper` | Paper runtime: builder, lifecycle, provider selection, vanilla bans/kicks, provider SPI |
+| `punishbridge-provider-*` | Adapters for LiteBans, AdvancedBan, LibertyBans, EssentialsX (one module each) |
+| `punishbridge-testkit` | `FakePunishmentBridge` for testing consumer plugins |
+| `punishbridge-bom` | Version alignment across modules |
+| `samples/embedded-paper` | Runnable shaded sample plugin |
+| `build-logic` | Convention plugins (`punishbridge.kotlin-library`, `punishbridge.published`) |
+
+## Building from source
+
+Requires JDK 21. Use the Gradle wrapper:
+
+```bash
+./gradlew clean build      # compile, test, Detekt, ktlint, Dokka, ABI check
+./gradlew ktlintFormat     # auto-format Kotlin
+./gradlew ktlintCheck      # verify formatting only
+./gradlew test             # run the test suite
+./gradlew apiCheck         # verify the public API is unchanged
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor workflow.
+
+## Troubleshooting
+
+- **`BridgeStartResult.Unavailable("No punishment provider is available")`** — the plugin is disabled, or
+  you forced `.provider(id)` for a provider that isn't installed. Vanilla is always available otherwise.
+- **`BridgeStartResult.Conflict`** — two dedicated providers are installed; pick one with `.provider(...)`.
+- **Mute returns `Unsupported`** — no mute-capable provider is installed (vanilla can't mute). Install
+  LiteBans/AdvancedBan/LibertyBans/EssentialsX.
+- **Provider not detected** — add it to `softdepend` in your `plugin.yml` so it loads before yours.
+- **Only one provider works after shading** — you're missing `mergeServiceFiles()` in your `shadowJar`.
+- **`NoClassDefFoundError` for Kotlin/coroutines at runtime** — bundle `kotlin-stdlib` and
+  `kotlinx-coroutines-core` in your plugin (don't relocate them).
 
 ## Documentation
 

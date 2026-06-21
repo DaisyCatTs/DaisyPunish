@@ -18,7 +18,7 @@ Implemented modules:
 - `punishbridge-bom`: aligned dependency versions.
 - `samples/embedded-paper`: shaded and relocated sample with merged service descriptors.
 
-Documentation, module-license metadata, Maven Central/JitPack publication setup, GitHub build/release workflows, Detekt, ktlint, Dokka, reproducible archives, and binary API validation are present.
+Shared build configuration lives in the `build-logic` included build as convention plugins (`punishbridge.kotlin-library`, `punishbridge.published`). Documentation, module-license metadata, Maven Central/JitPack publication setup, GitHub build/release workflows, Detekt, ktlint, Dokka, reproducible archives, and binary API validation are present.
 
 ## Verified commands
 
@@ -33,7 +33,7 @@ The final clean verification passed 113 tasks, including all compilations, tests
 
 The standard configuration-cache-enabled build also passed and a second run reused the cache successfully.
 
-Dependency locks are committed per module and `gradle/verification-metadata.xml` contains SHA-256 checksums. Paper's changing snapshot required an explicit verified checksum entry for timestamped build `20260511.115010-91`; a deliberate Paper snapshot upgrade must update that checksum and the lock state together.
+Dependency locks are committed per module (`gradle.lockfile`). Strict artifact checksum verification (`gradle/verification-metadata.xml`) was intentionally dropped: it is incompatible with Paper's changing snapshot (which produces duplicate-key regeneration failures) and with the `build-logic` plugin classpath, so it caused repeated, low-value build breakage.
 
 Local publication was also verified at version `2.0.0-rc.1`. The BOM and all seven publishable library artifacts produced POM, Gradle metadata, binary, sources, and Dokka documentation artifacts under `~/.m2/repository/io/github/daisycatts`.
 
