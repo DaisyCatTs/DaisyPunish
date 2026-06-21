@@ -1,12 +1,7 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    id("punishbridge.kotlin-base")
     alias(libs.plugins.shadow)
     alias(libs.plugins.run.paper)
-}
-
-kotlin {
-    explicitApi()
-    jvmToolchain(21)
 }
 
 dependencies {

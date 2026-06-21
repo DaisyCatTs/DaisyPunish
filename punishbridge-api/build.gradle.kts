@@ -1,4 +1,6 @@
 plugins {
+    id("punishbridge.kotlin-library")
+    id("punishbridge.published")
     alias(libs.plugins.binary.compatibility)
     alias(libs.plugins.cyclonedx)
 }

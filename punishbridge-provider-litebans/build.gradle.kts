@@ -1,3 +1,8 @@
+plugins {
+    id("punishbridge.kotlin-library")
+    id("punishbridge.published")
+}
+
 dependencies {
     implementation(project(":punishbridge-paper"))
     compileOnly(libs.paper.api)
