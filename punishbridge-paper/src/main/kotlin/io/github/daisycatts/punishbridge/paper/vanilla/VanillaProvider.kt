@@ -28,8 +28,9 @@ import io.github.daisycatts.punishbridge.RevocationRequest
 import io.github.daisycatts.punishbridge.RevocationSelector
 import io.github.daisycatts.punishbridge.ScopeMode
 import io.github.daisycatts.punishbridge.TargetKind
+import io.github.daisycatts.punishbridge.paper.AbstractPaperProvider
 import io.github.daisycatts.punishbridge.paper.PaperProviderContext
-import io.github.daisycatts.punishbridge.paper.PaperPunishmentProvider
+import io.github.daisycatts.punishbridge.paper.ProviderIds
 import io.papermc.paper.ban.BanListType
 import net.kyori.adventure.text.Component
 import org.bukkit.BanEntry
@@ -40,12 +41,12 @@ import java.time.Instant
 import java.util.UUID
 
 public class VanillaProvider(
-    private val context: PaperProviderContext,
-    providerId: String = "vanilla",
+    context: PaperProviderContext,
+    providerId: String = ProviderIds.VANILLA,
     providerDisplayName: String = "Paper/Vanilla",
     providerTier: ProviderTier = ProviderTier.SYSTEM,
     providerVersion: String? = context.plugin.server.bukkitVersion,
-) : PaperPunishmentProvider {
+) : AbstractPaperProvider(context) {
     override val descriptor: ProviderDescriptor =
         ProviderDescriptor(
             id = providerId,
@@ -65,7 +66,6 @@ public class VanillaProvider(
                 PunishmentKind.KICK -> context.onServerThread { kick(request) }
                 else -> error("Unsupported capability reached vanilla provider")
             }
-            val receipt = OperationReceipt(descriptor.id, correlationId, ReceiptStatus.APPLIED)
             context.emit(
                 BridgeEvent.PunishmentApplied(
                     descriptor.id,
@@ -76,7 +76,7 @@ public class VanillaProvider(
                     request.toRecord(descriptor.id),
                 ),
             )
-            BridgeOutcome.Success(receipt)
+            BridgeOutcome.Success(OperationReceipt(descriptor.id, correlationId, ReceiptStatus.APPLIED))
         }
 
     override suspend fun revoke(request: RevocationRequest): BridgeOutcome<RevocationReceipt> =
@@ -214,16 +214,6 @@ public class VanillaProvider(
     }
 
     private fun getProfileBan(profile: PlayerProfile): BanEntry<PlayerProfile>? = profileBans().getBanEntry(profile)
-
-    private inline fun <T> runProviderOperation(
-        label: String,
-        action: () -> BridgeOutcome<T>,
-    ): BridgeOutcome<T> =
-        try {
-            action()
-        } catch (error: Throwable) {
-            BridgeOutcome.Failed(descriptor.id, "Failed to $label", error)
-        }
 
     override fun close(): Unit = Unit
 

@@ -1,12 +1,10 @@
 package io.github.daisycatts.punishbridge.provider.libertybans
 
-import io.github.daisycatts.punishbridge.BridgeEvent
 import io.github.daisycatts.punishbridge.BridgeOutcome
 import io.github.daisycatts.punishbridge.Capability
 import io.github.daisycatts.punishbridge.DataFidelity
 import io.github.daisycatts.punishbridge.DurationMode
 import io.github.daisycatts.punishbridge.EventFidelity
-import io.github.daisycatts.punishbridge.EventOrigin
 import io.github.daisycatts.punishbridge.OperationReceipt
 import io.github.daisycatts.punishbridge.ProviderCapabilities
 import io.github.daisycatts.punishbridge.ProviderDescriptor
@@ -27,8 +25,9 @@ import io.github.daisycatts.punishbridge.RevocationRequest
 import io.github.daisycatts.punishbridge.RevocationSelector
 import io.github.daisycatts.punishbridge.ScopeMode
 import io.github.daisycatts.punishbridge.TargetKind
+import io.github.daisycatts.punishbridge.paper.AbstractPaperProvider
 import io.github.daisycatts.punishbridge.paper.PaperProviderContext
-import io.github.daisycatts.punishbridge.paper.PaperPunishmentProvider
+import io.github.daisycatts.punishbridge.paper.ProviderIds
 import kotlinx.coroutines.future.await
 import space.arim.libertybans.api.AddressVictim
 import space.arim.libertybans.api.CompositeVictim
@@ -50,24 +49,22 @@ import space.arim.omnibus.events.ListenerPriorities
 import space.arim.omnibus.events.RegisteredListener
 import java.time.Duration
 import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 
 public class LibertyBansProvider(
-    private val context: PaperProviderContext,
-) : PaperPunishmentProvider {
+    context: PaperProviderContext,
+) : AbstractPaperProvider(context) {
     private val libertyBans: LibertyBans =
         OmnibusProvider
             .getOmnibus()
             .registry
             .getProvider(LibertyBans::class.java)
             .orElseThrow { IllegalStateException("LibertyBans API provider is unavailable") }
-    private val pending: ConcurrentHashMap<String, UUID> = ConcurrentHashMap()
     private val punishListener: RegisteredListener
     private val pardonListener: RegisteredListener
 
     override val descriptor: ProviderDescriptor =
         ProviderDescriptor(
-            "libertybans",
+            ProviderIds.LIBERTYBANS,
             "LibertyBans",
             LibertyBansProvider::class.java.`package`.implementationVersion ?: "development",
             context.plugin.server.pluginManager
@@ -85,21 +82,21 @@ public class LibertyBansProvider(
             eventBus.registerListener(
                 PostPunishEvent::class.java,
                 ListenerPriorities.NORMAL,
-                EventConsumer { event -> emitApplied(event.punishment) },
+                EventConsumer { event -> onPunish(event.punishment) },
             )
         pardonListener =
             eventBus.registerListener(
                 PostPardonEvent::class.java,
                 ListenerPriorities.NORMAL,
-                EventConsumer { event -> emitRevoked(event.punishment) },
+                EventConsumer { event -> onPardon(event.punishment) },
             )
     }
 
     override suspend fun issue(request: PunishmentRequest): BridgeOutcome<OperationReceipt> =
         runProviderOperation("issue ${request.kind}") {
-            val correlationId = UUID.randomUUID()
             val victim = request.target.toVictim()
-            pending[request.kind.fingerprint(victim)] = correlationId
+            val fingerprint = request.kind.fingerprint(victim)
+            val correlationId = correlations.begin(fingerprint)
             val duration =
                 when (val value = request.duration) {
                     PunishmentDuration.Permanent -> Duration.ZERO
@@ -119,7 +116,7 @@ public class LibertyBansProvider(
                     .toCompletableFuture()
                     .await()
             if (punishment.isEmpty) {
-                pending.remove(request.kind.fingerprint(victim), correlationId)
+                correlations.discard(fingerprint, correlationId)
                 return@runProviderOperation BridgeOutcome.Rejected("LibertyBans did not apply the punishment")
             }
             val reference = PunishmentReference(descriptor.id, punishment.get().identifier.toString())
@@ -143,7 +140,7 @@ public class LibertyBansProvider(
                     }
                     is RevocationSelector.ByTarget -> {
                         val victim = selector.target.toVictim()
-                        pending[selector.kind.fingerprint(victim)] = correlationId
+                        correlations.register(selector.kind.fingerprint(victim), correlationId)
                         libertyBans.revoker
                             .revokeByTypeAndVictim(selector.kind.toLibertyType(), victim)
                             .undoAndGetPunishment()
@@ -174,51 +171,22 @@ public class LibertyBansProvider(
             BridgeOutcome.Success(records)
         }
 
-    private fun emitApplied(punishment: Punishment) {
-        val correlationId = pending.remove(punishment.type.toKind().fingerprint(punishment.victim))
-        context.emit(
-            BridgeEvent.PunishmentApplied(
-                descriptor.id,
-                context.clock.instant(),
-                if (correlationId == null) EventOrigin.EXTERNAL_PROVIDER else EventOrigin.BRIDGE,
-                correlationId,
-                EventFidelity.AUTHORITATIVE_LOCAL,
-                punishment.toRecord(),
-            ),
-        )
+    private fun onPunish(punishment: Punishment) {
+        val correlationKey = punishment.type.toKind().fingerprint(punishment.victim)
+        emitApplied(punishment.toRecord(), EventFidelity.AUTHORITATIVE_LOCAL, correlationKey)
     }
 
-    private fun emitRevoked(punishment: Punishment) {
-        val correlationId = pending.remove(punishment.type.toKind().fingerprint(punishment.victim))
-        context.emit(
-            BridgeEvent.PunishmentRevoked(
-                descriptor.id,
-                context.clock.instant(),
-                if (correlationId == null) EventOrigin.EXTERNAL_PROVIDER else EventOrigin.BRIDGE,
-                correlationId,
-                EventFidelity.AUTHORITATIVE_LOCAL,
-                punishment.toRecord(),
-                null,
-            ),
-        )
+    private fun onPardon(punishment: Punishment) {
+        val correlationKey = punishment.type.toKind().fingerprint(punishment.victim)
+        emitRevoked(punishment.toRecord(), EventFidelity.AUTHORITATIVE_LOCAL, correlationKey)
     }
 
     override fun close() {
         val eventBus = libertyBans.omnibus.eventBus
         eventBus.unregisterListener(punishListener)
         eventBus.unregisterListener(pardonListener)
-        pending.clear()
+        correlations.clear()
     }
-
-    private suspend inline fun <T> runProviderOperation(
-        label: String,
-        crossinline action: suspend () -> BridgeOutcome<T>,
-    ): BridgeOutcome<T> =
-        try {
-            action()
-        } catch (error: Throwable) {
-            BridgeOutcome.Failed(descriptor.id, "Failed to $label", error)
-        }
 
     private fun PunishmentScope.toServerScope(): ServerScope =
         when (this) {
@@ -298,8 +266,8 @@ private fun PunishmentKind.fingerprint(victim: Victim): String = "$name:$victim"
 
 private fun Punishment.toRecord(): PunishmentRecord =
     PunishmentRecord(
-        "libertybans",
-        PunishmentReference("libertybans", identifier.toString()),
+        ProviderIds.LIBERTYBANS,
+        PunishmentReference(ProviderIds.LIBERTYBANS, identifier.toString()),
         type.toKind(),
         victim.toTarget(),
         operator.toActor(),

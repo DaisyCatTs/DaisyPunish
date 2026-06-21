@@ -1,12 +1,10 @@
 package io.github.daisycatts.punishbridge.provider.advancedban
 
-import io.github.daisycatts.punishbridge.BridgeEvent
 import io.github.daisycatts.punishbridge.BridgeOutcome
 import io.github.daisycatts.punishbridge.Capability
 import io.github.daisycatts.punishbridge.DataFidelity
 import io.github.daisycatts.punishbridge.DurationMode
 import io.github.daisycatts.punishbridge.EventFidelity
-import io.github.daisycatts.punishbridge.EventOrigin
 import io.github.daisycatts.punishbridge.OperationReceipt
 import io.github.daisycatts.punishbridge.ProviderCapabilities
 import io.github.daisycatts.punishbridge.ProviderDescriptor
@@ -27,8 +25,9 @@ import io.github.daisycatts.punishbridge.RevocationRequest
 import io.github.daisycatts.punishbridge.RevocationSelector
 import io.github.daisycatts.punishbridge.ScopeMode
 import io.github.daisycatts.punishbridge.TargetKind
+import io.github.daisycatts.punishbridge.paper.AbstractPaperProvider
 import io.github.daisycatts.punishbridge.paper.PaperProviderContext
-import io.github.daisycatts.punishbridge.paper.PaperPunishmentProvider
+import io.github.daisycatts.punishbridge.paper.ProviderIds
 import kotlinx.coroutines.withContext
 import me.leoko.advancedban.bukkit.event.PunishmentEvent
 import me.leoko.advancedban.bukkit.event.RevokePunishmentEvent
@@ -41,17 +40,14 @@ import org.bukkit.event.Listener
 import java.net.InetAddress
 import java.time.Instant
 import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 
 public class AdvancedBanProvider(
-    private val context: PaperProviderContext,
-) : PaperPunishmentProvider,
+    context: PaperProviderContext,
+) : AbstractPaperProvider(context),
     Listener {
-    private val pending: ConcurrentHashMap<String, UUID> = ConcurrentHashMap()
-
     override val descriptor: ProviderDescriptor =
         ProviderDescriptor(
-            "advancedban",
+            ProviderIds.ADVANCEDBAN,
             "AdvancedBan",
             AdvancedBanProvider::class.java.`package`.implementationVersion ?: "development",
             context.plugin.server.pluginManager
@@ -70,8 +66,7 @@ public class AdvancedBanProvider(
 
     override suspend fun issue(request: PunishmentRequest): BridgeOutcome<OperationReceipt> =
         runProviderOperation("issue ${request.kind}") {
-            val correlationId = UUID.randomUUID()
-            pending[request.fingerprint()] = correlationId
+            val correlationId = correlations.begin(request.fingerprint())
             withContext(context.blockingDispatcher) {
                 val type = request.advancedType()
                 val (name, target) = request.target.advancedIdentity(type)
@@ -154,48 +149,18 @@ public class AdvancedBanProvider(
                 context.plugin.logger.warning("Could not normalize AdvancedBan event: ${error.message}")
                 return
             }
-        val correlationId = pending.remove(punishment.fingerprint())
-        val origin = if (correlationId == null) EventOrigin.EXTERNAL_PROVIDER else EventOrigin.BRIDGE
+        val correlationKey = punishment.fingerprint()
         if (revoked) {
-            context.emit(
-                BridgeEvent.PunishmentRevoked(
-                    descriptor.id,
-                    context.clock.instant(),
-                    origin,
-                    correlationId,
-                    EventFidelity.AUTHORITATIVE_LOCAL,
-                    record,
-                    null,
-                ),
-            )
+            emitRevoked(record, EventFidelity.AUTHORITATIVE_LOCAL, correlationKey)
         } else {
-            context.emit(
-                BridgeEvent.PunishmentApplied(
-                    descriptor.id,
-                    context.clock.instant(),
-                    origin,
-                    correlationId,
-                    EventFidelity.AUTHORITATIVE_LOCAL,
-                    record,
-                ),
-            )
+            emitApplied(record, EventFidelity.AUTHORITATIVE_LOCAL, correlationKey)
         }
     }
 
     override fun close() {
         HandlerList.unregisterAll(this)
-        pending.clear()
+        correlations.clear()
     }
-
-    private suspend inline fun <T> runProviderOperation(
-        label: String,
-        crossinline action: suspend () -> BridgeOutcome<T>,
-    ): BridgeOutcome<T> =
-        try {
-            action()
-        } catch (error: Throwable) {
-            BridgeOutcome.Failed(descriptor.id, "Failed to $label", error)
-        }
 
     private companion object {
         fun buildCapabilities(): Set<Capability> {
@@ -311,8 +276,8 @@ private fun Punishment.toRecord(): PunishmentRecord {
             PunishmentActor.System(operator)
         }
     return PunishmentRecord(
-        "advancedban",
-        PunishmentReference("advancedban", "${kind.name.lowercase()}:$id"),
+        ProviderIds.ADVANCEDBAN,
+        PunishmentReference(ProviderIds.ADVANCEDBAN, "${kind.name.lowercase()}:$id"),
         kind,
         target,
         actor,

@@ -6,7 +6,6 @@ import io.github.daisycatts.punishbridge.Capability
 import io.github.daisycatts.punishbridge.DataFidelity
 import io.github.daisycatts.punishbridge.DurationMode
 import io.github.daisycatts.punishbridge.EventFidelity
-import io.github.daisycatts.punishbridge.EventOrigin
 import io.github.daisycatts.punishbridge.OperationReceipt
 import io.github.daisycatts.punishbridge.ProviderCapabilities
 import io.github.daisycatts.punishbridge.ProviderDescriptor
@@ -27,8 +26,9 @@ import io.github.daisycatts.punishbridge.RevocationRequest
 import io.github.daisycatts.punishbridge.RevocationSelector
 import io.github.daisycatts.punishbridge.ScopeMode
 import io.github.daisycatts.punishbridge.TargetKind
+import io.github.daisycatts.punishbridge.paper.AbstractPaperProvider
 import io.github.daisycatts.punishbridge.paper.PaperProviderContext
-import io.github.daisycatts.punishbridge.paper.PaperPunishmentProvider
+import io.github.daisycatts.punishbridge.paper.ProviderIds
 import kotlinx.coroutines.withContext
 import litebans.api.Database
 import litebans.api.Entry
@@ -36,12 +36,10 @@ import litebans.api.Events
 import java.net.InetAddress
 import java.time.Instant
 import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 
 public class LiteBansProvider(
-    private val context: PaperProviderContext,
-) : PaperPunishmentProvider {
-    private val pending: ConcurrentHashMap<String, UUID> = ConcurrentHashMap()
+    context: PaperProviderContext,
+) : AbstractPaperProvider(context) {
     private val listener: Events.Listener =
         object : Events.Listener() {
             override fun entryAdded(entry: Entry) {
@@ -55,7 +53,7 @@ public class LiteBansProvider(
 
     override val descriptor: ProviderDescriptor =
         ProviderDescriptor(
-            "litebans",
+            ProviderIds.LITEBANS,
             "LiteBans",
             LiteBansProvider::class.java.`package`.implementationVersion ?: "development",
             context.plugin.server.pluginManager
@@ -73,17 +71,16 @@ public class LiteBansProvider(
 
     override suspend fun issue(request: PunishmentRequest): BridgeOutcome<OperationReceipt> =
         runProviderOperation("issue ${request.kind}") {
-            val correlationId = UUID.randomUUID()
-            pending[request.fingerprint()] = correlationId
+            val fingerprint = request.fingerprint()
+            val correlationId = correlations.begin(fingerprint)
             val accepted =
                 context.onServerThread {
                     context.plugin.server.dispatchCommand(context.plugin.server.consoleSender, request.toLiteBansCommand())
                 }
             if (!accepted) {
-                pending.remove(request.fingerprint(), correlationId)
+                correlations.discard(fingerprint, correlationId)
                 return@runProviderOperation BridgeOutcome.Rejected("LiteBans rejected the command")
             }
-            val receipt = OperationReceipt(descriptor.id, correlationId, ReceiptStatus.ACCEPTED)
             context.emit(
                 BridgeEvent.OperationAccepted(
                     descriptor.id,
@@ -93,7 +90,7 @@ public class LiteBansProvider(
                     request = request,
                 ),
             )
-            BridgeOutcome.Accepted(receipt)
+            BridgeOutcome.Accepted(OperationReceipt(descriptor.id, correlationId, ReceiptStatus.ACCEPTED))
         }
 
     override suspend fun revoke(request: RevocationRequest): BridgeOutcome<RevocationReceipt> =
@@ -102,13 +99,12 @@ public class LiteBansProvider(
                 request.toCommand() ?: return@runProviderOperation BridgeOutcome.Rejected(
                     "LiteBans cannot revoke this selector through its public command interface",
                 )
-            val correlationId = UUID.randomUUID()
             val accepted =
                 context.onServerThread {
                     context.plugin.server.dispatchCommand(context.plugin.server.consoleSender, command)
                 }
             if (!accepted) return@runProviderOperation BridgeOutcome.Rejected("LiteBans rejected the command")
-            BridgeOutcome.Success(RevocationReceipt(descriptor.id, correlationId, null))
+            BridgeOutcome.Success(RevocationReceipt(descriptor.id, UUID.randomUUID(), null))
         }
 
     override suspend fun findActive(query: PunishmentQuery): BridgeOutcome<List<PunishmentRecord>> =
@@ -143,49 +139,18 @@ public class LiteBansProvider(
                 context.plugin.logger.warning("Could not normalize LiteBans event: ${error.message}")
                 return
             }
-        val correlation = pending.remove(entry.fingerprint())
-        val origin = if (correlation == null) EventOrigin.EXTERNAL_PROVIDER else EventOrigin.BRIDGE
-        val now = context.clock.instant()
+        val correlationKey = entry.fingerprint()
         if (revoked) {
-            context.emit(
-                BridgeEvent.PunishmentRevoked(
-                    descriptor.id,
-                    now,
-                    origin,
-                    correlation,
-                    EventFidelity.PARTIAL_LOCAL,
-                    record,
-                    null,
-                ),
-            )
+            emitRevoked(record, EventFidelity.PARTIAL_LOCAL, correlationKey)
         } else {
-            context.emit(
-                BridgeEvent.PunishmentApplied(
-                    descriptor.id,
-                    now,
-                    origin,
-                    correlation,
-                    EventFidelity.PARTIAL_LOCAL,
-                    record,
-                ),
-            )
+            emitApplied(record, EventFidelity.PARTIAL_LOCAL, correlationKey)
         }
     }
 
     override fun close() {
         Events.get().unregister(listener)
-        pending.clear()
+        correlations.clear()
     }
-
-    private suspend inline fun <T> runProviderOperation(
-        label: String,
-        crossinline action: suspend () -> BridgeOutcome<T>,
-    ): BridgeOutcome<T> =
-        try {
-            action()
-        } catch (error: Throwable) {
-            BridgeOutcome.Failed(descriptor.id, "Failed to $label", error)
-        }
 
     private companion object {
         fun buildCapabilities(): Set<Capability> {
@@ -290,11 +255,10 @@ private fun Entry.fingerprint(): String = "$type:${uuid ?: ""}:${ip ?: ""}"
 private fun Entry.toRecord(): PunishmentRecord {
     val parsedUuid = uuid?.let(UUID::fromString)
     val parsedAddress = ip?.takeUnless { '%' in it || '*' in it }?.let(InetAddress::getByName)
-    val username = parsedUuid?.let { "unknown" }
     val target =
         when {
-            parsedUuid != null && parsedAddress != null -> PunishmentTarget.PlayerAndAddress(parsedUuid, username!!, parsedAddress)
-            parsedUuid != null -> PunishmentTarget.Player(parsedUuid, username!!)
+            parsedUuid != null && parsedAddress != null -> PunishmentTarget.PlayerAndAddress(parsedUuid, "unknown", parsedAddress)
+            parsedUuid != null -> PunishmentTarget.Player(parsedUuid, "unknown")
             parsedAddress != null -> PunishmentTarget.Address(parsedAddress)
             else -> error("LiteBans entry has no representable target")
         }
@@ -322,8 +286,8 @@ private fun Entry.toRecord(): PunishmentRecord {
             PunishmentScope.NamedServer(serverScope)
         }
     return PunishmentRecord(
-        "litebans",
-        PunishmentReference("litebans", "$type:$id"),
+        ProviderIds.LITEBANS,
+        PunishmentReference(ProviderIds.LITEBANS, "$type:$id"),
         kind,
         target,
         actor,

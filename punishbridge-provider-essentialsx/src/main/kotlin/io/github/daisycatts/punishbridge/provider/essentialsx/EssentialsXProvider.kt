@@ -2,13 +2,11 @@ package io.github.daisycatts.punishbridge.provider.essentialsx
 
 import com.earth2me.essentials.Essentials
 import com.earth2me.essentials.User
-import io.github.daisycatts.punishbridge.BridgeEvent
 import io.github.daisycatts.punishbridge.BridgeOutcome
 import io.github.daisycatts.punishbridge.Capability
 import io.github.daisycatts.punishbridge.DataFidelity
 import io.github.daisycatts.punishbridge.DurationMode
 import io.github.daisycatts.punishbridge.EventFidelity
-import io.github.daisycatts.punishbridge.EventOrigin
 import io.github.daisycatts.punishbridge.OperationReceipt
 import io.github.daisycatts.punishbridge.ProviderCapabilities
 import io.github.daisycatts.punishbridge.ProviderDescriptor
@@ -29,8 +27,9 @@ import io.github.daisycatts.punishbridge.RevocationRequest
 import io.github.daisycatts.punishbridge.RevocationSelector
 import io.github.daisycatts.punishbridge.ScopeMode
 import io.github.daisycatts.punishbridge.TargetKind
+import io.github.daisycatts.punishbridge.paper.AbstractPaperProvider
 import io.github.daisycatts.punishbridge.paper.PaperProviderContext
-import io.github.daisycatts.punishbridge.paper.PaperPunishmentProvider
+import io.github.daisycatts.punishbridge.paper.ProviderIds
 import io.github.daisycatts.punishbridge.paper.vanilla.VanillaProvider
 import net.ess3.api.IUser
 import net.ess3.api.events.MuteStatusChangeEvent
@@ -40,21 +39,19 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import java.time.Instant
 import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 
 public class EssentialsXProvider(
-    private val context: PaperProviderContext,
-) : PaperPunishmentProvider,
+    context: PaperProviderContext,
+) : AbstractPaperProvider(context),
     Listener {
     private val essentials: Essentials =
         context.plugin.server.pluginManager
             .getPlugin("Essentials") as? Essentials
             ?: error("EssentialsX plugin is not available")
-    private val pending: ConcurrentHashMap<String, UUID> = ConcurrentHashMap()
     private val vanilla: VanillaProvider =
         VanillaProvider(
             context,
-            providerId = "essentialsx",
+            providerId = ProviderIds.ESSENTIALSX,
             providerDisplayName = "EssentialsX",
             providerTier = ProviderTier.FALLBACK,
             providerVersion = essentials.pluginMeta.version,
@@ -62,7 +59,7 @@ public class EssentialsXProvider(
 
     override val descriptor: ProviderDescriptor =
         ProviderDescriptor(
-            "essentialsx",
+            ProviderIds.ESSENTIALSX,
             "EssentialsX",
             EssentialsXProvider::class.java.`package`.implementationVersion ?: "development",
             essentials.pluginMeta.version,
@@ -86,8 +83,7 @@ public class EssentialsXProvider(
                 request.target as? PunishmentTarget.Player
                     ?: return@runProviderOperation BridgeOutcome.Rejected("EssentialsX mutes require a player target")
             val user = essentials.getUser(target.uuid)
-            val correlationId = UUID.randomUUID()
-            pending[target.uuid.toString()] = correlationId
+            val correlationId = correlations.begin(target.uuid.toString())
             val outcome =
                 context.onServerThread {
                     val timeout =
@@ -109,7 +105,7 @@ public class EssentialsXProvider(
                     true
                 }
             if (!outcome) {
-                pending.remove(target.uuid.toString(), correlationId)
+                correlations.discard(target.uuid.toString(), correlationId)
                 BridgeOutcome.Rejected("EssentialsX mute event was cancelled")
             } else {
                 BridgeOutcome.Success(OperationReceipt(descriptor.id, correlationId, ReceiptStatus.APPLIED))
@@ -118,12 +114,10 @@ public class EssentialsXProvider(
     }
 
     override suspend fun revoke(request: RevocationRequest): BridgeOutcome<RevocationReceipt> {
-        val muteTarget = request.muteTarget()
-        if (muteTarget == null) return vanilla.revoke(request)
+        val muteTarget = request.muteTarget() ?: return vanilla.revoke(request)
         return runProviderOperation("unmute player") {
             val user = essentials.getUser(muteTarget.uuid)
-            val correlationId = UUID.randomUUID()
-            pending[muteTarget.uuid.toString()] = correlationId
+            val correlationId = correlations.begin(muteTarget.uuid.toString())
             val outcome =
                 context.onServerThread {
                     val event =
@@ -143,7 +137,7 @@ public class EssentialsXProvider(
                     true
                 }
             if (!outcome) {
-                pending.remove(muteTarget.uuid.toString(), correlationId)
+                correlations.discard(muteTarget.uuid.toString(), correlationId)
                 BridgeOutcome.Rejected("EssentialsX unmute event was cancelled")
             } else {
                 BridgeOutcome.Success(RevocationReceipt(descriptor.id, correlationId, 1))
@@ -178,8 +172,7 @@ public class EssentialsXProvider(
     public fun onMuteChange(event: MuteStatusChangeEvent) {
         val affected = event.affected
         val target = PunishmentTarget.Player(affected.getUUID(), affected.name)
-        val correlationId = pending.remove(affected.getUUID().toString())
-        val origin = if (correlationId == null) EventOrigin.EXTERNAL_PROVIDER else EventOrigin.BRIDGE
+        val correlationKey = affected.getUUID().toString()
         val record =
             PunishmentRecord(
                 descriptor.id,
@@ -194,28 +187,9 @@ public class EssentialsXProvider(
                 DataFidelity.PARTIAL,
             )
         if (event.value) {
-            context.emit(
-                BridgeEvent.PunishmentApplied(
-                    descriptor.id,
-                    context.clock.instant(),
-                    origin,
-                    correlationId,
-                    EventFidelity.AUTHORITATIVE_LOCAL,
-                    record,
-                ),
-            )
+            emitApplied(record, EventFidelity.AUTHORITATIVE_LOCAL, correlationKey)
         } else {
-            context.emit(
-                BridgeEvent.PunishmentRevoked(
-                    descriptor.id,
-                    context.clock.instant(),
-                    origin,
-                    correlationId,
-                    EventFidelity.AUTHORITATIVE_LOCAL,
-                    record,
-                    null,
-                ),
-            )
+            emitRevoked(record, EventFidelity.AUTHORITATIVE_LOCAL, correlationKey)
         }
     }
 
@@ -255,19 +229,9 @@ public class EssentialsXProvider(
 
     override fun close() {
         HandlerList.unregisterAll(this)
-        pending.clear()
+        correlations.clear()
         vanilla.close()
     }
-
-    private suspend inline fun <T> runProviderOperation(
-        label: String,
-        crossinline action: suspend () -> BridgeOutcome<T>,
-    ): BridgeOutcome<T> =
-        try {
-            action()
-        } catch (error: Throwable) {
-            BridgeOutcome.Failed(descriptor.id, "Failed to $label", error)
-        }
 
     private companion object {
         fun muteCapabilities(): Set<Capability> {
