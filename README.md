@@ -1,18 +1,47 @@
-# PunishBridge 2
+# PunishBridge
 
-PunishBridge is a storage-free Kotlin bridge between Paper plugins and common punishment systems. It exposes typed, non-blocking issue, revoke, query, and event APIs without treating provider failures as “not punished”.
+**One typed, non-blocking API for every Minecraft punishment plugin.**
+
+Write your moderation logic once. PunishBridge routes it to whatever the server actually runs —
+LiteBans, AdvancedBan, LibertyBans, EssentialsX, or Paper's built-in ban lists — and never
+pretends a backend failure means "not punished."
+
+[![Build](https://github.com/DaisyCatTs/DaisyPunish/actions/workflows/build.yml/badge.svg)](https://github.com/DaisyCatTs/DaisyPunish/actions/workflows/build.yml)
+[![JitPack](https://jitpack.io/v/DaisyCatTs/DaisyPunish.svg)](https://jitpack.io/#DaisyCatTs/DaisyPunish)
+[![License](https://img.shields.io/badge/core-Apache--2.0-blue.svg)](LICENSE)
+![Java](https://img.shields.io/badge/Java-21-orange.svg)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.4-7F52FF.svg)
+![Paper](https://img.shields.io/badge/Paper-1.21.11-lightgrey.svg)
+
+---
+
+## Why PunishBridge
+
+- **One API, five backends.** Ban, mute, warn, and kick through a single interface; the right
+  provider is detected and selected at runtime.
+- **It never lies.** Provider failures surface as explicit `Unavailable` / `Failed` outcomes —
+  never a silent `false` that looks like "not punished."
+- **Non-blocking by design.** A Kotlin coroutine API plus a Java `CompletionStage` facade.
+  Database work runs off-thread; Bukkit calls go back to the main thread automatically.
+- **Fully typed.** Sealed targets, actors, durations, and scopes — no nullable-field guesswork,
+  no fake console UUIDs.
+- **Capability-aware.** Ask `capabilities.supports(...)` before you act, so vanilla never gets a
+  mute request it can't honor.
+- **Live, not cached.** Storage-free: queries read fresh provider state. No database, no migrations.
+- **Event stream.** Observe punishments issued through the bridge *and* externally (e.g. a staff
+  `/ban`), where the provider exposes it.
+- **Safe by construction.** Per-target serialization, operation timeouts, owned executor and
+  listeners that shut down cleanly.
+- **Testable.** Ships a `FakePunishmentBridge` so you can unit-test your plugin with no server.
 
 ## Requirements
 
-- Java 21
-- Paper 1.21.11
-- Kotlin 2.4 and kotlinx-coroutines 1.11 when not already supplied by the consuming plugin
+- Java 21 · Paper 1.21.11
+- Kotlin 2.4 and kotlinx-coroutines 1.11 (bundle them if your plugin doesn't already)
 
-Supported providers are LiteBans, AdvancedBan, LibertyBans, EssentialsX, and Paper's native ban lists. Dedicated punishment providers take precedence over EssentialsX; vanilla is the final fallback. Multiple dedicated providers require an explicit provider ID.
+## Install
 
-## Dependency
-
-### JitPack
+### JitPack (easiest — no account or signing needed)
 
 ```kotlin
 repositories {
@@ -22,10 +51,12 @@ repositories {
 dependencies {
     implementation("com.github.DaisyCatTs.DaisyPunish:punishbridge-paper:v2.0.0")
     implementation("com.github.DaisyCatTs.DaisyPunish:punishbridge-provider-litebans:v2.0.0")
+    // add only the adapters you want to support
 }
 ```
 
-JitPack builds the tagged commit on first request, so no Maven Central account or signing is required. Use the same coordinate version on every module (a release tag such as `v2.0.0`, or a commit hash) so their versions stay aligned. Provider APIs stay `compileOnly`, so the server still supplies LiteBans, AdvancedBan, LibertyBans, or EssentialsX at runtime.
+Use the same version (a release tag like `v2.0.0`, or a commit hash) on every module so they stay
+aligned. Provider APIs are `compileOnly` — the server supplies the real plugin at runtime.
 
 ### Maven Central
 
@@ -37,72 +68,96 @@ dependencies {
 }
 ```
 
-Choose only the provider adapter modules you need. See [module licensing](LICENSES/README.md) before embedding GPL or AGPL adapters.
+> Adapter licensing: `punishbridge-paper`/`-api`/`-testkit`/`-provider-litebans` are **Apache-2.0**;
+> `-provider-advancedban`/`-provider-essentialsx` are **GPL-3.0**; `-provider-libertybans` is
+> **AGPL-3.0**. See [module licensing](LICENSES/README.md) before bundling a GPL/AGPL adapter.
 
-## Kotlin usage
+## Quick start (Kotlin)
 
 ```kotlin
 private lateinit var punishments: PunishmentBridge
 
 override fun onEnable() {
-    punishments = when (val result = PaperPunishmentBridge.builder(this)
-        .currentServer(server.name)
-        .build()) {
-        is BridgeStartResult.Ready -> result.bridge
-        is BridgeStartResult.Conflict -> error("Select one of ${result.providerIds}")
+    punishments = when (val result = PaperPunishmentBridge.builder(this).currentServer(server.name).build()) {
+        is BridgeStartResult.Ready       -> result.bridge
+        is BridgeStartResult.Conflict    -> error("Pick a provider: ${result.providerIds}")
         is BridgeStartResult.Unavailable -> error(result.reason)
-        is BridgeStartResult.Failed -> throw result.cause
+        is BridgeStartResult.Failed      -> throw result.cause
     }
 }
 
-suspend fun mute(player: Player): BridgeOutcome<OperationReceipt> = punishments.issue(
-    PunishmentRequest(
-        kind = PunishmentKind.MUTE,
-        target = PunishmentTarget.Player(player.uniqueId, player.name),
-        actor = PunishmentActor.System("chat-filter"),
-        reason = "Repeated spam",
-        duration = PunishmentDuration.Temporary(Duration.ofMinutes(10)),
-    ),
-)
+suspend fun mute(player: Player): BridgeOutcome<OperationReceipt> =
+    punishments.issue(
+        PunishmentRequest(
+            kind = PunishmentKind.MUTE,
+            target = PunishmentTarget.Player(player.uniqueId, player.name),
+            actor = PunishmentActor.System("chat-filter"),
+            reason = "Repeated spam",
+            duration = PunishmentDuration.Temporary(Duration.ofMinutes(10)),
+        ),
+    )
 
 override fun onDisable() = punishments.close()
 ```
 
-Always handle `Unavailable` and `Failed` separately from a successful `false` query.
+Handle every outcome — a successful query returns `Success(false)` for "not punished," while
+`Unsupported` / `Unavailable` / `Failed` mean "couldn't determine it":
+
+```kotlin
+when (val outcome = punishments.issue(request)) {
+    is BridgeOutcome.Success, is BridgeOutcome.Accepted -> { /* done */ }
+    is BridgeOutcome.Unsupported -> log.warn("Active provider can't do that (e.g. vanilla mute)")
+    is BridgeOutcome.Rejected    -> log.warn(outcome.reason)
+    is BridgeOutcome.Unavailable -> log.warn(outcome.reason)
+    is BridgeOutcome.Failed      -> log.error(outcome.message, outcome.cause)
+}
+```
 
 ## Java usage
 
-Wrap a ready bridge in `JavaPunishmentBridge`. Operations return `CompletionStage`; `subscribe` returns an `AutoCloseable` event subscription.
-
-`CompletionStage` callbacks and `subscribe` listeners run on a background thread, not the Paper main thread. Re-enter the main thread with `Bukkit.getScheduler().runTask(plugin, …)` before touching any Bukkit API from them.
+Wrap a ready bridge in `JavaPunishmentBridge`; operations return `CompletionStage` and `subscribe`
+returns an `AutoCloseable`. Callbacks and events run **off** the main thread — hop back with
+`Bukkit.getScheduler().runTask(plugin, …)` before touching the Bukkit API.
 
 ## Shading
 
+PunishBridge is bundled into your plugin (it isn't a standalone server plugin):
+
 ```kotlin
 tasks.shadowJar {
-    mergeServiceFiles()
+    mergeServiceFiles() // required — merges provider auto-discovery descriptors
     relocate("io.github.daisycatts.punishbridge", "$group.libs.punishbridge")
 }
 ```
 
-Do not shade Paper or provider APIs. Do not relocate Kotlin or coroutines. Add these entries to the consuming plugin's `plugin.yml` so provider classes are visible at enable time:
+Do not shade Paper or provider APIs. Do not relocate Kotlin or coroutines. Declare the providers as
+soft dependencies so they load first:
 
 ```yaml
 softdepend: [LiteBans, AdvancedBan, LibertyBans, Essentials]
 ```
 
-The bridge must be created in `onEnable` and closed in `onDisable`.
-
-## Capability and event coverage
+## Provider & capability coverage
 
 | Provider | Ban | Mute | Warning | Kick | External events |
 | --- | --- | --- | --- | --- | --- |
-| LiteBans | Full; writes command-accepted | Full; writes command-accepted | Issue/revoke/query | Issue | Partial local |
-| AdvancedBan | Full | Full | Full | Issue | Authoritative local |
-| LibertyBans | Full | Full | Full | Issue | Authoritative local |
-| EssentialsX | Native/Paper | Full | Unsupported | Paper | Mute authoritative; ban/kick bridge-only |
-| Vanilla Paper | Full | Unsupported | Unsupported | Issue | Bridge-only |
+| LiteBans | full (writes command-accepted) | full (writes command-accepted) | issue/revoke/query | issue | partial, local |
+| AdvancedBan | full | full | full | issue | authoritative, local |
+| LibertyBans | full | full | full | issue | authoritative, local |
+| EssentialsX | native/Paper | full | unsupported | Paper | mute authoritative; ban/kick bridge-only |
+| Vanilla Paper | full | unsupported | unsupported | issue | bridge-only |
 
-LiteBans does not emit every cross-instance or wildcard-removal event. PunishBridge reports these limitations through provider capabilities and never intercepts commands to manufacture events.
+Dedicated providers outrank EssentialsX, which outranks vanilla. Two dedicated providers installed at
+once require an explicit `.provider("<id>")`. PunishBridge reports these limits through capabilities
+and never intercepts commands to manufacture events.
 
-See the [consuming guide](docs/CONSUMING.md) for full integration steps, [migration guidance](docs/MIGRATION.md), [compatibility details](docs/COMPATIBILITY.md), and the [sample embedded plugin](samples/embedded-paper).
+## Documentation
+
+- **[Consuming guide](docs/CONSUMING.md)** — full integration walkthrough + API reference
+- [Migration from v1](docs/MIGRATION.md)
+- [Compatibility & operational contract](docs/COMPATIBILITY.md)
+- [Sample embedded plugin](samples/embedded-paper)
+
+## License
+
+Apache-2.0 core; provider adapters carry their upstream licenses — see [LICENSES](LICENSES/README.md).
