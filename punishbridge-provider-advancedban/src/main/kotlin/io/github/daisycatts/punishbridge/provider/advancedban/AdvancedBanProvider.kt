@@ -198,58 +198,32 @@ public class AdvancedBanProvider(
         }
 
     private companion object {
-        fun buildCapabilities(): Set<Capability> =
-            buildSet {
-                val player = setOf(TargetKind.PLAYER)
-                val banTargets = setOf(TargetKind.PLAYER, TargetKind.ADDRESS, TargetKind.PLAYER_AND_ADDRESS)
-                val durations = setOf(DurationMode.PERMANENT, DurationMode.TEMPORARY)
+        fun buildCapabilities(): Set<Capability> {
+            val player = setOf(TargetKind.PLAYER)
+            val banTargets = setOf(TargetKind.PLAYER, TargetKind.ADDRESS, TargetKind.PLAYER_AND_ADDRESS)
+            val durations = setOf(DurationMode.PERMANENT, DurationMode.TEMPORARY)
+            val currentOnly = setOf(ScopeMode.CURRENT_SERVER)
+
+            fun cap(
+                operation: PunishmentOperation,
+                kind: PunishmentKind,
+                targets: Set<TargetKind>,
+                durationModes: Set<DurationMode>,
+            ): Capability = Capability(operation, kind, targets, durationModes, currentOnly, EventFidelity.AUTHORITATIVE_LOCAL)
+
+            return buildSet {
                 for (kind in PunishmentKind.entries) {
                     val targets = if (kind == PunishmentKind.BAN) banTargets else player
                     val issueDurations = if (kind == PunishmentKind.KICK) setOf(DurationMode.PERMANENT) else durations
-                    add(
-                        Capability(
-                            PunishmentOperation.ISSUE,
-                            kind,
-                            targets,
-                            issueDurations,
-                            setOf(ScopeMode.CURRENT_SERVER),
-                            EventFidelity.AUTHORITATIVE_LOCAL,
-                        ),
-                    )
-                    add(
-                        Capability(
-                            PunishmentOperation.OBSERVE_EXTERNAL,
-                            kind,
-                            targets,
-                            issueDurations,
-                            setOf(ScopeMode.CURRENT_SERVER),
-                            EventFidelity.AUTHORITATIVE_LOCAL,
-                        ),
-                    )
+                    add(cap(PunishmentOperation.ISSUE, kind, targets, issueDurations))
+                    add(cap(PunishmentOperation.OBSERVE_EXTERNAL, kind, targets, issueDurations))
                     if (kind != PunishmentKind.KICK) {
-                        add(
-                            Capability(
-                                PunishmentOperation.REVOKE,
-                                kind,
-                                targets,
-                                durations,
-                                setOf(ScopeMode.CURRENT_SERVER),
-                                EventFidelity.AUTHORITATIVE_LOCAL,
-                            ),
-                        )
-                        add(
-                            Capability(
-                                PunishmentOperation.QUERY,
-                                kind,
-                                targets,
-                                durations,
-                                setOf(ScopeMode.CURRENT_SERVER),
-                                EventFidelity.AUTHORITATIVE_LOCAL,
-                            ),
-                        )
+                        add(cap(PunishmentOperation.REVOKE, kind, targets, durations))
+                        add(cap(PunishmentOperation.QUERY, kind, targets, durations))
                     }
                 }
             }
+        }
     }
 }
 

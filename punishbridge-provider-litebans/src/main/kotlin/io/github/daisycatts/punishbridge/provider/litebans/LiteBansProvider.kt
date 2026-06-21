@@ -188,17 +188,22 @@ public class LiteBansProvider(
         }
 
     private companion object {
-        fun buildCapabilities(): Set<Capability> =
-            buildSet {
-                val ipCapableTargets =
-                    setOf(
-                        TargetKind.PLAYER,
-                        TargetKind.ADDRESS,
-                        TargetKind.PLAYER_AND_ADDRESS,
-                    )
-                val playerTargets = setOf(TargetKind.PLAYER, TargetKind.PLAYER_AND_ADDRESS)
-                val durations = setOf(DurationMode.PERMANENT, DurationMode.TEMPORARY)
-                val queryScopes = setOf(ScopeMode.CURRENT_SERVER, ScopeMode.GLOBAL, ScopeMode.NAMED_SERVER)
+        fun buildCapabilities(): Set<Capability> {
+            val ipCapableTargets = setOf(TargetKind.PLAYER, TargetKind.ADDRESS, TargetKind.PLAYER_AND_ADDRESS)
+            val playerTargets = setOf(TargetKind.PLAYER, TargetKind.PLAYER_AND_ADDRESS)
+            val durations = setOf(DurationMode.PERMANENT, DurationMode.TEMPORARY)
+            val currentOnly = setOf(ScopeMode.CURRENT_SERVER)
+            val queryScopes = setOf(ScopeMode.CURRENT_SERVER, ScopeMode.GLOBAL, ScopeMode.NAMED_SERVER)
+
+            fun cap(
+                operation: PunishmentOperation,
+                kind: PunishmentKind,
+                targets: Set<TargetKind>,
+                durationModes: Set<DurationMode>,
+                scopes: Set<ScopeMode>,
+            ): Capability = Capability(operation, kind, targets, durationModes, scopes, EventFidelity.PARTIAL_LOCAL)
+
+            return buildSet {
                 for (kind in PunishmentKind.entries) {
                     val targets =
                         when (kind) {
@@ -206,41 +211,15 @@ public class LiteBansProvider(
                             PunishmentKind.WARNING, PunishmentKind.KICK -> playerTargets
                         }
                     val issueDurations = if (kind == PunishmentKind.KICK) setOf(DurationMode.PERMANENT) else durations
-                    add(
-                        Capability(
-                            PunishmentOperation.ISSUE,
-                            kind,
-                            targets,
-                            issueDurations,
-                            setOf(ScopeMode.CURRENT_SERVER),
-                            EventFidelity.PARTIAL_LOCAL,
-                        ),
-                    )
-                    add(
-                        Capability(
-                            PunishmentOperation.OBSERVE_EXTERNAL,
-                            kind,
-                            targets,
-                            issueDurations,
-                            queryScopes,
-                            EventFidelity.PARTIAL_LOCAL,
-                        ),
-                    )
+                    add(cap(PunishmentOperation.ISSUE, kind, targets, issueDurations, currentOnly))
+                    add(cap(PunishmentOperation.OBSERVE_EXTERNAL, kind, targets, issueDurations, queryScopes))
                     if (kind != PunishmentKind.KICK) {
-                        add(
-                            Capability(
-                                PunishmentOperation.REVOKE,
-                                kind,
-                                targets,
-                                durations,
-                                setOf(ScopeMode.CURRENT_SERVER),
-                                EventFidelity.PARTIAL_LOCAL,
-                            ),
-                        )
-                        add(Capability(PunishmentOperation.QUERY, kind, targets, durations, queryScopes, EventFidelity.PARTIAL_LOCAL))
+                        add(cap(PunishmentOperation.REVOKE, kind, targets, durations, currentOnly))
+                        add(cap(PunishmentOperation.QUERY, kind, targets, durations, queryScopes))
                     }
                 }
             }
+        }
     }
 }
 

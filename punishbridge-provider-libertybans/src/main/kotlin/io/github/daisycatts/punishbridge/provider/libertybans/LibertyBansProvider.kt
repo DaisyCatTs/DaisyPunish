@@ -228,32 +228,32 @@ public class LibertyBansProvider(
         }
 
     private companion object {
-        fun buildCapabilities(): Set<Capability> =
-            buildSet {
-                val allTargets = setOf(TargetKind.PLAYER, TargetKind.ADDRESS, TargetKind.PLAYER_AND_ADDRESS)
-                val playerTargets = setOf(TargetKind.PLAYER, TargetKind.PLAYER_AND_ADDRESS)
-                val durations = setOf(DurationMode.PERMANENT, DurationMode.TEMPORARY)
-                val scopes = setOf(ScopeMode.CURRENT_SERVER, ScopeMode.GLOBAL, ScopeMode.NAMED_SERVER)
+        fun buildCapabilities(): Set<Capability> {
+            val allTargets = setOf(TargetKind.PLAYER, TargetKind.ADDRESS, TargetKind.PLAYER_AND_ADDRESS)
+            val playerTargets = setOf(TargetKind.PLAYER, TargetKind.PLAYER_AND_ADDRESS)
+            val durations = setOf(DurationMode.PERMANENT, DurationMode.TEMPORARY)
+            val scopes = setOf(ScopeMode.CURRENT_SERVER, ScopeMode.GLOBAL, ScopeMode.NAMED_SERVER)
+
+            fun cap(
+                operation: PunishmentOperation,
+                kind: PunishmentKind,
+                targets: Set<TargetKind>,
+                durationModes: Set<DurationMode>,
+            ): Capability = Capability(operation, kind, targets, durationModes, scopes, EventFidelity.AUTHORITATIVE_LOCAL)
+
+            return buildSet {
                 for (kind in PunishmentKind.entries) {
                     val targets = if (kind == PunishmentKind.KICK) playerTargets else allTargets
                     val issueDurations = if (kind == PunishmentKind.KICK) setOf(DurationMode.PERMANENT) else durations
-                    add(Capability(PunishmentOperation.ISSUE, kind, targets, issueDurations, scopes, EventFidelity.AUTHORITATIVE_LOCAL))
-                    add(
-                        Capability(
-                            PunishmentOperation.OBSERVE_EXTERNAL,
-                            kind,
-                            targets,
-                            issueDurations,
-                            scopes,
-                            EventFidelity.AUTHORITATIVE_LOCAL,
-                        ),
-                    )
+                    add(cap(PunishmentOperation.ISSUE, kind, targets, issueDurations))
+                    add(cap(PunishmentOperation.OBSERVE_EXTERNAL, kind, targets, issueDurations))
                     if (kind != PunishmentKind.KICK) {
-                        add(Capability(PunishmentOperation.REVOKE, kind, targets, durations, scopes, EventFidelity.AUTHORITATIVE_LOCAL))
-                        add(Capability(PunishmentOperation.QUERY, kind, targets, durations, scopes, EventFidelity.AUTHORITATIVE_LOCAL))
+                        add(cap(PunishmentOperation.REVOKE, kind, targets, durations))
+                        add(cap(PunishmentOperation.QUERY, kind, targets, durations))
                     }
                 }
             }
+        }
     }
 }
 

@@ -228,33 +228,26 @@ public class VanillaProvider(
     override fun close(): Unit = Unit
 
     private companion object {
-        fun buildCapabilities(): Set<Capability> =
-            buildSet {
-                val targetKinds = setOf(TargetKind.PLAYER, TargetKind.ADDRESS, TargetKind.PLAYER_AND_ADDRESS)
-                val durations = setOf(DurationMode.PERMANENT, DurationMode.TEMPORARY)
+        fun buildCapabilities(): Set<Capability> {
+            val banTargets = setOf(TargetKind.PLAYER, TargetKind.ADDRESS, TargetKind.PLAYER_AND_ADDRESS)
+            val kickTargets = setOf(TargetKind.PLAYER, TargetKind.PLAYER_AND_ADDRESS)
+            val durations = setOf(DurationMode.PERMANENT, DurationMode.TEMPORARY)
+            val currentOnly = setOf(ScopeMode.CURRENT_SERVER)
+
+            fun cap(
+                operation: PunishmentOperation,
+                kind: PunishmentKind,
+                targets: Set<TargetKind>,
+                durationModes: Set<DurationMode>,
+            ): Capability = Capability(operation, kind, targets, durationModes, currentOnly, EventFidelity.BRIDGE_ONLY)
+
+            return buildSet {
                 for (operation in setOf(PunishmentOperation.ISSUE, PunishmentOperation.REVOKE, PunishmentOperation.QUERY)) {
-                    add(
-                        Capability(
-                            operation,
-                            PunishmentKind.BAN,
-                            targetKinds,
-                            durations,
-                            setOf(ScopeMode.CURRENT_SERVER),
-                            EventFidelity.BRIDGE_ONLY,
-                        ),
-                    )
+                    add(cap(operation, PunishmentKind.BAN, banTargets, durations))
                 }
-                add(
-                    Capability(
-                        PunishmentOperation.ISSUE,
-                        PunishmentKind.KICK,
-                        setOf(TargetKind.PLAYER, TargetKind.PLAYER_AND_ADDRESS),
-                        setOf(DurationMode.PERMANENT),
-                        setOf(ScopeMode.CURRENT_SERVER),
-                        EventFidelity.BRIDGE_ONLY,
-                    ),
-                )
+                add(cap(PunishmentOperation.ISSUE, PunishmentKind.KICK, kickTargets, setOf(DurationMode.PERMANENT)))
             }
+        }
     }
 }
 
