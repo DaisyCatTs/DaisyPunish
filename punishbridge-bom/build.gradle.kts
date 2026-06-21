@@ -1,7 +1,6 @@
 plugins {
     `java-platform`
-    `maven-publish`
-    signing
+    id("punishbridge.publishing")
 }
 
 javaPlatform.allowDependencies()
@@ -41,30 +40,5 @@ publishing {
                 }
             }
         }
-    }
-    repositories {
-        maven {
-            name = "Central"
-            url = uri(
-                if (version.toString().endsWith("SNAPSHOT")) {
-                    "https://central.sonatype.com/repository/maven-snapshots/"
-                } else {
-                    "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
-                },
-            )
-            credentials {
-                username = providers.environmentVariable("CENTRAL_USERNAME").orNull
-                password = providers.environmentVariable("CENTRAL_TOKEN").orNull
-            }
-        }
-    }
-}
-
-signing {
-    val key = providers.environmentVariable("MAVEN_SIGNING_KEY")
-    val password = providers.environmentVariable("MAVEN_SIGNING_PASSWORD")
-    if (key.isPresent) {
-        useInMemoryPgpKeys(key.get(), password.orNull)
-        sign(publishing.publications)
     }
 }
