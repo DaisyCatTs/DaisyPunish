@@ -65,4 +65,40 @@ class RequestValidatorTest {
 
         assertNull(RequestValidator.validate(request))
     }
+
+    @Test
+    fun `rejects a blank reason`() {
+        val request = PunishmentRequest(PunishmentKind.BAN, player, reason = "   ")
+
+        assertEquals("Reason must not be blank", RequestValidator.validate(request))
+    }
+
+    @Test
+    fun `rejects an overly long reason`() {
+        val request = PunishmentRequest(PunishmentKind.BAN, player, reason = "x".repeat(256))
+
+        assertEquals("Reason must not exceed 255 characters", RequestValidator.validate(request))
+    }
+
+    @Test
+    fun `rejects a non-positive temporary duration`() {
+        val request =
+            PunishmentRequest(
+                PunishmentKind.MUTE,
+                player,
+                reason = "spam",
+                duration = PunishmentDuration.Temporary(Duration.ZERO),
+            )
+
+        assertEquals("Temporary punishment duration must be positive", RequestValidator.validate(request))
+    }
+
+    @Test
+    fun `validates queries and revocations`() {
+        val emptyQuery = PunishmentQuery(player, emptySet())
+        assertEquals("At least one punishment kind is required", RequestValidator.validate(emptyQuery))
+
+        val revocation = RevocationRequest(RevocationSelector.ByTarget(player, PunishmentKind.BAN), reason = "appeal granted")
+        assertNull(RequestValidator.validate(revocation))
+    }
 }
